@@ -2,9 +2,9 @@
 
 ## Project Overview
 
-This project demonstrates the use of list data structures in various applications. The goal is to illustrate how list data structures can be employed to manage and organize data effectively. Our chosen application for this project is a **File Explorer-like Application**.
+This project demonstrates the use of list data structures in various applications. The goal is to illustrate how list data structures can be employed to manage and organize data effectively. Our chosen application for this project is a **prelim.File Explorer-like Application**.
 
-### Application Example: File Explorer
+### Application Example: prelim.File Explorer
 
 The project simulates a file explorer application that uses nested lists to represent and manage directories and files. This includes:
 
