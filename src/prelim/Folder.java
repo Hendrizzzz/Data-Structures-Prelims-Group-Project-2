@@ -1,46 +1,65 @@
 package prelim;
 
-public class Folder<T> implements Comparable<T> {
+import java.util.Objects;
+
+public class Folder implements Comparable<Folder> {
     private String folderName;
-    private LinkedList<File> files;
+    private LinkedList<Object> contents;
 
     public Folder() {
         this.folderName = "";
-        this.files = null;
+        this.contents = null;
     }
 
     public Folder(String folderName) {
         this.folderName = folderName;
-        this.files = null;
+        this.contents = null;
     }
 
     public String getFolderName() {
         return folderName;
     }
 
-    public LinkedList<File> getFiles() {
-        return files;
+    public LinkedList<Object> getContents() {
+        return contents;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Folder folder = (Folder) o;
+
+        return Objects.equals(folderName, folder.folderName);
+    }
+
+    @Override
+    public int hashCode() {
+        return folderName != null ? folderName.hashCode() : 0;
     }
 
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
 
-    public void setFiles(LinkedList<File> files) {
-        this.files = files;
+    public void setContents(LinkedList<Object> contents) {
+        this.contents = contents;
     }
+
+
 
     @Override
     public String toString() {
         return "Folder{" +
                 "folderName='" + folderName + '\'' +
-                ", files=" + files +
+                ", contents=" + contents +
                 '}';
     }
 
 
     @Override
-    public int compareTo(T o) {
+    public int compareTo(Folder o) {
         return 0; // Fix later
     }
 }
