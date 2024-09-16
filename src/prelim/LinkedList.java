@@ -37,10 +37,9 @@ public class LinkedList<T> implements MyList<T> {
      * If the list is empty, the new node becomes the head of the list.
      *
      * @param data the data to insert into the list
-     * @throws ListOverflowException if the list has reached its maximum capacity (if any)
      */
     @Override
-    public void insert(T data) throws ListOverflowException {
+    public void insert(T data) {
         Node<T> newNode = new Node<>(data);
         Node<T> currentNode = head;
         if (head == null) {
