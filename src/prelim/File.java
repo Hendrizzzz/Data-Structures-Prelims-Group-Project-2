@@ -1,9 +1,12 @@
 package prelim;
 
-public class File<T> implements Comparable<T> {
+import java.util.Objects;
+
+public class File implements Comparable<File> {
     private String fileName;
     private String extension;
-    private int size;
+    private int size; // or double
+
 
     public File() {
         this.fileName = "";
@@ -51,7 +54,27 @@ public class File<T> implements Comparable<T> {
     }
 
     @Override
-    public int compareTo(T o) {
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        File file = (File) o;
+
+        if (size != file.size) return false;
+        if (!Objects.equals(fileName, file.fileName)) return false;
+        return Objects.equals(extension, file.extension);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = fileName != null ? fileName.hashCode() : 0;
+        result = 31 * result + (extension != null ? extension.hashCode() : 0);
+        result = 31 * result + size;
+        return result;
+    }
+
+    @Override
+    public int compareTo(File o) {
         return 0;
     }
 }
