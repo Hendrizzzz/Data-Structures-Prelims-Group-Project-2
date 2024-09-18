@@ -20,6 +20,12 @@ public class File implements Comparable<File> {
         this.size = size;
     }
 
+
+    public File(String fileName, String extension) {
+        this.fileName = fileName;
+        this.extension = extension;
+    }
+
     public String getFileName() {
         return fileName;
     }
@@ -60,7 +66,6 @@ public class File implements Comparable<File> {
 
         File file = (File) o;
 
-        if (size != file.size) return false;
         if (!Objects.equals(fileName, file.fileName)) return false;
         return Objects.equals(extension, file.extension);
     }
@@ -69,7 +74,6 @@ public class File implements Comparable<File> {
     public int hashCode() {
         int result = fileName != null ? fileName.hashCode() : 0;
         result = 31 * result + (extension != null ? extension.hashCode() : 0);
-        result = 31 * result + size;
         return result;
     }
 
