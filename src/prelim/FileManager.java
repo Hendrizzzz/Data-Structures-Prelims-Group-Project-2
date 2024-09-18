@@ -15,7 +15,7 @@ public class FileManager {
 
 
     {
-        currentDirectory = "source/";
+        currentDirectory = "source";
     }
 
 
@@ -71,7 +71,8 @@ public class FileManager {
                 // THEN WE ARE ON THE SOURCE ROOT
      *     } else {
      *         // WE ARE ON EITHER DOCUMENTS, DOWNLOADS, MUSIC, VIDEOS, PICTURES, ETC
-     *     }
+     *     }*
+     * }
      *
      * @return
      */
@@ -94,25 +95,59 @@ public class FileManager {
         for (int i = 2; i < dir.length; i++) {
             if (toReturn instanceof LinkedList<?>) { // if it's on the
                 LinkedList<Object> folderList = (LinkedList<Object>) toReturn;
-                int index;
-
-                if ((index = folderList.search(dir[i])) != -1)
-                    toReturn = folderList.getElement(index);
-                else
-                    return null;
-
+                int index = folderList.search(dir[i]);
+                toReturn = folderList.getElement(index);
             }
             else if (toReturn instanceof Folder folder)
                 toReturn = folder.getContents();
-
-            // This works if in the GUI, you click a file, the path will change to 'currentDirectory/fileName'
-            // if not then remove this else if block
-            else if (toReturn instanceof File)
-                return toReturn;
         }
 
         return toReturn;
     }
+
+    // This assumes that you can't create a folder nor a file in the source directory
+    public boolean createFile(String fileName, String extension, int size) {
+        Object content = getContents();
+        File newFile = new File(fileName, extension);
+
+        // Check if type Folder, and if the fileName and extension don't exist yet in that directory
+        if (content instanceof Folder && ((Folder) content).getContents().search(newFile) == -1) {
+            newFile.setSize(size);
+            ((Folder) content).getContents().insert(newFile);
+            return true;
+        }
+        // Check if type LinkedList (Documents, Downloads, etc.),
+        // and if the fileName and extension don't exist yet in that directory
+        else if (content instanceof LinkedList<?> && ((LinkedList<Object>) content).search(newFile) == -1) {
+            newFile.setSize(size);
+            ((LinkedList<Object>) content).insert(newFile);
+            return true;
+        }
+        else
+            return false; // there is a duplicate file in the same level / directory
+    }
+
+    // This assumes that you can't create a folder nor a file in the source directory
+    public boolean createFolder(String folderName) {
+        Object content = getContents();
+        Folder newFolder = new Folder(folderName);
+
+        // Check if type Folder, and if the folderName don't exist yet in that directory
+        if (content instanceof Folder && ((Folder) content).getContents().search(newFolder) == -1) {
+            ((Folder) content).getContents().insert(newFolder);
+            return true;
+        }
+        // Check if type LinkedList (Documents, Downloads, etc.),
+        // and if the folderName and extension don't exist yet in that directory
+        else if (content instanceof LinkedList<?> && ((LinkedList<Object>) content).search(newFolder) == -1) {
+            ((LinkedList<Object>) content).insert(newFolder);
+            return true;
+        }
+        else
+            return false; // there is a duplicate folder in the same level / directory
+    }
+
+
 
 
 }
