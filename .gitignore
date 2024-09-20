@@ -1,3 +1,42 @@
 # Default ignored files
 /shelf/
 /.idea/
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+
+hs_err_pid*
+
+# IntelliJ IDEA
+*.iml
+.idea/
+*.iws
+/out/
+
+# Logs, temp, and output files
+*.log
+*.tmp
+*.swp
+*.DS_Store
+*.lock
+*.out
+
+# OS-specific files
+Thumbs.db
+.DS_Store
+._*
+
+# Generated files
+*.generated
