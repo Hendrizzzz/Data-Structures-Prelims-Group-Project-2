@@ -50,6 +50,9 @@ public class FileManager {
 
 
     /**
+     * SIMILAR TO LS COMMAND IN BASH.
+     * Gives the files and folders under the current directory in a type singlylinkedlist.
+     *
      * Usage in GUI (Example)
      *
      * Object contents = fileManager.getContents();
@@ -107,46 +110,31 @@ public class FileManager {
 
     // This assumes that you can't create a folder nor a file in the source directory
     public boolean createFile(String fileName, String extension, int size) {
-        Object content = getContents();
-        File newFile = new File(fileName, extension);
+        File newFile = new File(fileName, extension, size);
+        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
+        int index = folderList.search(newFile); // return the index of the file or -1 if it does not exist
 
-        // Check if type Folder, and if the fileName and extension don't exist yet in that directory
-        if (content instanceof Folder && ((Folder) content).getContents().search(newFile) == -1) {
-            newFile.setSize(size);
-            ((Folder) content).getContents().insert(newFile);
+        // If the file doesn't exist, then add it to the current directory
+        if (index != -1) {
+            folderList.insert(newFile);
             return true;
         }
-        // Check if type LinkedList (Documents, Downloads, etc.),
-        // and if the fileName and extension don't exist yet in that directory
-        else if (content instanceof LinkedList<?> && ((LinkedList<Object>) content).search(newFile) == -1) {
-            newFile.setSize(size);
-            ((LinkedList<Object>) content).insert(newFile);
-            return true;
-        }
-        else
-            return false; // there is a duplicate file in the same level / directory
+        else return false;
     }
 
     // This assumes that you can't create a folder nor a file in the source directory
     public boolean createFolder(String folderName) {
-        Object content = getContents();
         Folder newFolder = new Folder(folderName);
+        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
+        int index = folderList.search(newFolder); // returns the index of the folder or -1 if it does not exist
 
-        // Check if type Folder, and if the folderName don't exist yet in that directory
-        if (content instanceof Folder && ((Folder) content).getContents().search(newFolder) == -1) {
-            ((Folder) content).getContents().insert(newFolder);
+        // If the folder doesn't exist yet in the current directory, then add it
+        if (index != -1) {
+            folderList.insert(newFolder);
             return true;
         }
-        // Check if type LinkedList (Documents, Downloads, etc.),
-        // and if the folderName and extension don't exist yet in that directory
-        else if (content instanceof LinkedList<?> && ((LinkedList<Object>) content).search(newFolder) == -1) {
-            ((LinkedList<Object>) content).insert(newFolder);
-            return true;
-        }
-        else
-            return false; // there is a duplicate folder in the same level / directory
+        else return false;
     }
-
 
 
 
