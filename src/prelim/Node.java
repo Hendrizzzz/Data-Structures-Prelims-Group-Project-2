@@ -1,5 +1,7 @@
 package prelim;
 
+import java.util.Objects;
+
 /**
  * The {@code SinglyNode} class represents a node in a singly linked list.
  * <p>
@@ -90,5 +92,20 @@ public class Node<T> {
                 "datum=" + datum +
                 ", link=" + link +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Node<?> node = (Node<?>) o;
+
+        return Objects.equals(datum, node.datum);
+    }
+
+    @Override
+    public int hashCode() {
+        return datum != null ? datum.hashCode() : 0;
     }
 }

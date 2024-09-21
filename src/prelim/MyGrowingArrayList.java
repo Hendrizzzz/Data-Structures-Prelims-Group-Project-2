@@ -1,0 +1,163 @@
+package prelim;
+
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+
+/**
+ * A dynamically resizing array list implementation.
+ *
+ * @param <T> The type of elements in this list.
+ */
+public class MyGrowingArrayList<T> implements MyList<T> {
+
+    private T[] array;
+    private int size;
+
+    /**
+     * Creates a new MyGrowingArrayList with an initial capacity of 5.
+     */
+    @SuppressWarnings("unchecked")
+    public MyGrowingArrayList() {
+        array = (T[]) new Object[5];
+        size = 0;
+    }
+
+    /**
+     * Creates a new MyGrowingArrayList with the specified initial capacity.
+     *
+     * @param size The initial capacity of the list.
+     */
+    @SuppressWarnings("unchecked")
+    public MyGrowingArrayList(int size) {
+        this.size = size;
+        array = (T[]) new Object[size];
+    }
+
+
+    /**
+     * Constructs a MyGrowingArrayList with the specified array and size.
+     *
+     * @param array The array to initialize the list with.
+     * @param size  The size of the list.
+     */
+    public MyGrowingArrayList(T[] array, int size){
+        this.array = array;
+        this.size = size;
+    }
+
+    /**
+     * Returns the number of elements in the list.
+     *
+     * @return The number of elements in the list.
+     */
+    @Override
+    public int getSize() {
+        return size;
+    }
+
+    /**
+     * Inserts an element into the list.
+     * If the list is full, it expands the list by five elements.
+     *
+     * @param data The element to be inserted.
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void insert(T data) {
+        if (this.size == this.array.length) {
+            T[] newArray = (T[]) new Object[size + 5];
+
+            // Copy elements to the new array
+            for (int i = 0; i < size; i++) {
+                newArray[i] = this.array[i];
+            }
+
+            this.array = newArray;
+        }
+
+        this.array[size] = data;
+        size++;
+    }
+
+
+    /**
+     * Removes an element from the list.
+     *
+     * @param data The element to remove.
+     * @return True if the element was removed, false otherwise.
+     */
+    @Override
+    public boolean delete(T data) {
+        for (int i = 0; i < size; i++) {
+            if (array[i] != null && array[i].equals(data)) {
+                // Shift elements to the left
+                for (int j = i; j < size - 1; j++) {
+                    array[j] = array[j + 1];
+                }
+                array[size - 1] = null;
+                size--;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Searches for an element in the list.
+     *
+     * @param data The element to search for.
+     * @return The index of the element if found, -1 otherwise.
+     */
+    @Override
+    public int search(T data) {
+        for (int i = 0; i < size; i++) {
+            if (array[i] != null && array[i].equals(data)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Retrieves the element at the specified index.
+     *
+     * @param index The index of the element to retrieve.
+     * @return The element at the specified index.
+     * @throws IndexOutOfBoundsException If the index is out of range.
+     */
+    @Override
+    public T getElement(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        return array[index];
+    }
+
+    /**
+     * Replaces the element at the specified index with a new element.
+     *
+     * @param index  The index of the element to replace.
+     * @param object The new element to set at the specified index.
+     * @throws IndexOutOfBoundsException If the index is out of range.
+     */
+    public void set(int index, T object) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        array[index] = object;
+    }
+
+
+    /**
+     * Returns a string representation of the MyGrowingArrayList object.
+     *
+     * @return A string showing the contents of the array and the size.
+     */
+    @Override
+    public String toString() {
+        return "MyGrowingArrayList{" +
+                "array=" + Arrays.toString(array) +
+                ", size=" + size +
+                '}';
+    }
+} // end of the class
