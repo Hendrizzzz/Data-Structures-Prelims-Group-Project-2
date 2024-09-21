@@ -86,7 +86,8 @@ public class FileManager {
 
         String[] dir = currentDirectory.split("/");
 
-        Object toReturn = switch (dir[1]) {
+        // TODO: add more
+        LinkedList<Object> toReturn = switch (dir[1]) {
             case "documents" -> documents;
             case "pictures" -> pictures;
             case "music" -> music;
@@ -96,13 +97,11 @@ public class FileManager {
 
         // Traverse, well if it's just "source/documents", this for loop won't excute
         for (int i = 2; i < dir.length; i++) {
-            if (toReturn instanceof LinkedList<?>) { // if it's on the
-                LinkedList<Object> folderList = (LinkedList<Object>) toReturn;
-                int index = folderList.search(dir[i]);
-                toReturn = folderList.getElement(index);
-            }
-            else if (toReturn instanceof Folder folder)
-                toReturn = folder.getContents();
+            int index = toReturn.search(dir[i]);
+            if (index != -1)
+                toReturn = ((Folder) toReturn.getElement(index)).getContents();
+            else
+                return null; // For CLI-debugging purposes
         }
 
         return toReturn;
@@ -115,11 +114,12 @@ public class FileManager {
         int index = folderList.search(newFile); // return the index of the file or -1 if it does not exist
 
         // If the file doesn't exist, then add it to the current directory
-        if (index != -1) {
+        if (index == -1) {
             folderList.insert(newFile);
             return true;
         }
-        else return false;
+
+        return false;
     }
 
     // This assumes that you can't create a folder nor a file in the source directory
@@ -129,13 +129,65 @@ public class FileManager {
         int index = folderList.search(newFolder); // returns the index of the folder or -1 if it does not exist
 
         // If the folder doesn't exist yet in the current directory, then add it
-        if (index != -1) {
+        if (index == -1) {
             folderList.insert(newFolder);
             return true;
         }
-        else return false;
+        return false;
     }
 
+
+    public void deleteFile(String fileName, String extension) {
+        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
+        if (folderList.delete(new File(fileName, extension)))
+            System.out.println(folderList + " is deleted");
+        else
+            System.out.println(folderList + " is not deleted"); // For CLI debugging
+    }
+
+
+    public void deleteFolder(String folderName) {
+        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
+        if (folderList.delete(new Folder(folderName)))
+            System.out.println(folderName + " is deleted");
+        else
+            System.out.println(folderName + " is not deleted"); // For CLI debugging
+    }
+
+
+    // May be changed depending on the design
+    // whether the extension of the file is modifiable upon creation
+    // I recommend adding more file datafields if this method is different from renaming the file
+    public void updateFile(String oldFileName, String oldExtension, String newFileName, String newExtension, int size) {
+        File oldFile = new File(oldFileName, oldExtension);
+        File updatedFile = new File(newFileName, newExtension, size);
+        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
+        folderList.delete(oldFile);
+        folderList.insert(updatedFile);
+    }
+
+    public void renameFile(String oldName, String extension, String newName) {
+        // TODO: Implement this method
+    }
+
+
+    public MyGrowingArrayList<File> searchFile(String filename) {
+        MyGrowingArrayList<File> foundFiles = new MyGrowingArrayList<>();
+        searchFileRecursion(filename, foundFiles, (LinkedList<Object>) getContents());
+        return foundFiles;
+    }
+
+    // Depth-first search traversion
+    private void searchFileRecursion(String filenameToSearch, MyGrowingArrayList<File> filesFound, LinkedList<Object> currentContents) {
+        for (int i = 0; i < currentContents.getSize(); i++) {
+            Object currentFileFolder = currentContents.getElement(i);
+
+            if (currentFileFolder instanceof File file && file.getFileName().contains(filenameToSearch))
+                filesFound.insert(file);
+            else if (currentFileFolder instanceof Folder folder)
+                searchFileRecursion(filenameToSearch, filesFound, folder.getContents());
+        }
+    }
 
 
 }
