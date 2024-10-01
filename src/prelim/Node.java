@@ -3,7 +3,7 @@ package prelim;
 import java.util.Objects;
 
 /**
- * The {@code SinglyNode} class represents a node in a singly linked list.
+ * The {@code Node} class represents a node in a linked list.
  * <p>
  * Each node in this list contains a data element and a link to the next node in the list. The list is linear, with each node
  * pointing to the next node, and the last node pointing to {@code null}.
@@ -64,27 +64,21 @@ public class Node<T> {
     }
 
     /**
-     * Returns the data stored in this node.
-     *
-     * @return the data stored in this node
+     * @return the data stored in this node.
      */
     public T getDatum() {
         return datum;
     }
 
     /**
-     * Returns the link to the next node.
-     *
-     * @return the next node in the list
+     * @return the link to the next node.
      */
     public Node<T> getLink() {
         return link;
     }
 
     /**
-     * Returns a string representation of this node, including the data and the link.
-     *
-     * @return a string representation of this node
+     * @return a string representation of this node, including the data and the link.
      */
     @Override
     public String toString() {
@@ -93,7 +87,9 @@ public class Node<T> {
                 ", link=" + link +
                 '}';
     }
-
+    /**
+     * @return True/ False if a Node is equals another node.
+     * */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -103,7 +99,9 @@ public class Node<T> {
 
         return Objects.equals(datum, node.datum);
     }
-
+    /**
+     * @return An integer to represent a hash code for a node.
+     * */
     @Override
     public int hashCode() {
         return datum != null ? datum.hashCode() : 0;
