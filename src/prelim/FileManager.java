@@ -167,7 +167,16 @@ public class FileManager {
     }
 
     public void renameFile(String oldName, String extension, String newName) {
-        // TODO: Implement this method
+         File oldFile = new File(oldName, extension);
+        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
+        int index = folderList.search(oldFile);
+        if (index != -1) {
+            File fileToRename = (File) folderList.getElement(index);
+            fileToRename.setFileName(newName);
+            System.out.println("File '" + oldName + "' renamed to '" + newName + "'");
+        } else {
+            System.out.println("File '" + oldName + "' not found");
+        }
     }
 
 
