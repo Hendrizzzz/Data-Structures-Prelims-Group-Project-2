@@ -1,17 +1,21 @@
 package prelim;
 
+
+import java.util.Date;
+
 /**
  * Class that facilitates operation; creation, deletion, etc. of files or folders
  */
 public class FileManager {
     private String currentDirectory;
-    private prelim.LinkedList<prelim.LinkedList<Object>> fileStructure;
+    private LinkedList<LinkedList<FileSystemEntity>> source;
 
-    prelim.LinkedList<Object> documents;
-    prelim.LinkedList<Object> pictures;
-    prelim.LinkedList<Object> music;
-    prelim.LinkedList<Object> videos;
-    prelim.LinkedList<Object> downloads;
+    LinkedList<FileSystemEntity> desktop;
+    LinkedList<FileSystemEntity> downloads;
+    LinkedList<FileSystemEntity> documents;
+    LinkedList<FileSystemEntity> pictures;
+    LinkedList<FileSystemEntity> music;
+    LinkedList<FileSystemEntity> videos;
 
 
     {
@@ -23,181 +27,217 @@ public class FileManager {
      * Default Constructor; chains it with the parameterized constructor
      */
     public FileManager() {
-        this(new prelim.LinkedList<prelim.LinkedList<Object>>());
+        this(new LinkedList<LinkedList<FileSystemEntity>>());
     }
 
     /**
      * Constructor with arguments, declares values on datafields
-     * @param fileStructure the fileStructure
+     * @param source the source
      */
-    public FileManager(prelim.LinkedList<prelim.LinkedList<Object>> fileStructure) {
-        this.fileStructure = fileStructure;
-        this.fileStructure.insert(documents = new prelim.LinkedList<>());
-        this.fileStructure.insert(pictures = new prelim.LinkedList<>());
-        this.fileStructure.insert(music = new prelim.LinkedList<>());
-        this.fileStructure.insert(videos = new prelim.LinkedList<>());
-        this.fileStructure.insert(downloads = new LinkedList<>());
-    }
-
-
-    public String getDirectory() {
-        return currentDirectory;
-    }
-
-    public void setDirectory(String currentDirectory) {
-        this.currentDirectory = currentDirectory;
+    public FileManager(LinkedList<LinkedList<FileSystemEntity>> source) {
+        this.source = source;
+        this.source.insert(desktop = new LinkedList<>());
+        this.source.insert(downloads = new LinkedList<>());
+        this.source.insert(documents = new LinkedList<>());
+        this.source.insert(pictures = new LinkedList<>());
+        this.source.insert(music = new LinkedList<>());
+        this.source.insert(videos = new LinkedList<>());
     }
 
 
     /**
-     * SIMILAR TO LS COMMAND IN BASH.
-     * Gives the files and folders under the current directory in a type singlylinkedlist.
-     *
-     * Usage in GUI (Example)
-     *
-     * Object contents = fileManager.getContents();
-     *
-     * if (contents == null) {
-     *     then the current directory is dead end, no files or folder yet
-     * }
-     *
-     * else if (content instanceof Folder) {
-     *     // Then this is a folder
-     * }
-     *
-     * else if (content instanceof LinkedList<?>) {
-     *     // Check if it's a LinkedList of LinkedLists
-     *     LinkedList<?> list = (LinkedList<?>) content;
-     *
-     *     // If the first element is also a LinkedList, it's a list of lists
-     *     if (!list.isEmpty() && list.getElement(0) instanceof LinkedList<?>) {
-                // THEN WE ARE ON THE SOURCE ROOT
-     *     } else {
-     *         // WE ARE ON EITHER DOCUMENTS, DOWNLOADS, MUSIC, VIDEOS, PICTURES, ETC
-     *     }*
-     * }
-     *
-     * @return
+     * @return the String representation of the current directory
      */
-    public Object getContents() {
-        if (this.currentDirectory.equals("source"))
-            return fileStructure;  // Return immediately
+    public String getDirectory() {
+        return currentDirectory;
+    }
 
-        String[] dir = currentDirectory.split("/");
-        LinkedList<Object> toReturn = getDirectoryContents(dir[1]);
+    /**
+     * Navigates through a folder
+     * @param folderName the name of the folder to navigate through
+     */
+    public void navigateToFolder(String folderName) {
+        currentDirectory = currentDirectory + "\\" + folderName;
+    }
+
+    /**
+     * Navigates out from a folder
+     */
+    public void navigateBack() {
+        if (currentDirectory.equals("source"))
+            return;
+
+        String[] path = currentDirectory.split("\\\\");
+
+        StringBuilder newPath = new StringBuilder();
+        for (int i = 0; i < path.length - 1; i++)  // don't include the last now
+            newPath.append(path[i]);
+
+        currentDirectory = newPath.toString();
+    }
+
+    /**
+     * @param folderName the name of the folder to retrieve (path)
+     * @return the path of the folder
+     */
+    public String getFolderPath(String folderName) {
+        return currentDirectory + "\\" + folderName;
+    }
+
+    /**
+     * @param fileName the name of the file to retrieve (path)
+     * @return the path of the file
+     */
+    public String getFilePath(String fileName) {
+        return currentDirectory + "\\" + fileName;
+    }
+
+
+    /**
+     * Most used method. Call this every time it clicks a folder or goes back.
+     * @return the contents of the current directory (folders, files).
+     */
+    public Object getCurrentDirectoryContents() {
+        if (this.currentDirectory.equals("source"))
+            return source;  // Return immediately
+
+        String[] path = currentDirectory.split("\\\\");
+        LinkedList<FileSystemEntity> contents = getDirectoryContents(path[1]);
 
         // Traverse, well if it's just "source/documents" or any same level, this for loop won't excute
-        for (int i = 2; i < dir.length; i++) {
-            int index = toReturn.search(dir[i]);
+        for (int i = 2; i < path.length; i++) {
+            int index = contents.search(new Folder(path[i]));
             if (index != -1)
-                toReturn = ((Folder) toReturn.getElement(index)).getContents();
+                contents = ((Folder) contents.getElement(index)).getSubContents();
             else
                 return null; // This should not execute, For CLI-debugging purposes
         }
 
-        return toReturn;
+        return contents;
     }
 
-    // TODO: add more
-    private LinkedList<Object> getDirectoryContents(String dirType) {
+    private Folder getCurrentFolder() {
+        String[] path = currentDirectory.split("\\\\");
+        LinkedList<FileSystemEntity> toReturn = getDirectoryContents(path[1]);
+
+        // Traverse, well if it's just "source/documents" or any same level, this for loop won't excute
+        for (int i = 2; i < path.length - 1; i++) {
+            int index = toReturn.search(new Folder(path[i]));
+            toReturn = ((Folder) toReturn.getElement(index)).getSubContents();
+        }
+
+        int index = toReturn.search(new Folder(path[path.length - 1]));
+        return (Folder) toReturn.getElement(index);
+    }
+
+
+    private LinkedList<FileSystemEntity> getDirectoryContents(String dirType) {
         return switch (dirType) {
-            case "documents" -> documents;
-            case "pictures" -> pictures;
-            case "music" -> music;
-            case "videos" -> videos;
+            case "Desktop" -> desktop;
+            case "Documents" -> documents;
+            case "Pictures" -> pictures;
+            case "Music" -> music;
+            case "Videos" -> videos;
             default -> downloads;
         };
     }
 
 
-    // This assumes that you can't create a folder nor a file in the source directory
-    public boolean createFile(String fileName, String extension, int size) {
-        File newFile = new File(fileName, extension, size);
-        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
-        int index = folderList.search(newFile); // return the index of the file or -1 if it does not exist
-
-        // Add it to the current directory
-        if (index == -1) {
-            folderList.insert(newFile);
-            return true;
-        }
-        return false; // The file already exists. Failed to create a new File.
+    /**
+     * Creates a file in this current Directory
+     * @param fileName the name of the file to Create
+     * @param extension the extension of the file to Create
+     * @param size the size of the file to Create
+     */
+    public void createFile(String fileName, String extension, int size) {
+        File newFile = new File(fileName, extension, size, new Date());
+        Folder currentFolderContainer = getCurrentFolder();
+        currentFolderContainer.addFile(newFile);
     }
 
-    // This assumes that you can't create a folder nor a file in the source directory
-    public boolean createFolder(String folderName) {
+    /**
+     * Creates a folder in this current directory.
+     * @param folderName the name of the folder to create
+     */
+    public void createFolder(String folderName) {
         Folder newFolder = new Folder(folderName);
-        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
-        int index = folderList.search(newFolder); // returns the index of the folder or -1 if it does not exist
-
-        // Add it to the current directory
-        if (index == -1) {
-            folderList.insert(newFolder);
-            return true;
-        }
-        return false; // The folder already exists.
+        Folder currentFolderContainer = getCurrentFolder();
+        currentFolderContainer.addFolder(newFolder);
     }
 
 
-    public void deleteFile(String fileName, String extension) {
-        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
-        if (folderList.delete(new File(fileName, extension)))
-            System.out.println(folderList + " is deleted");
-        else
-            System.out.println(folderList + " is not deleted"); // For CLI debugging
+    /**
+     * Deletes a file in the current directory.
+     *
+     * @param fileName  the file name
+     * @param extension the extension
+     * @throws ListEmptyException when the current folder container is empty.
+     */
+    public void deleteFile(String fileName, String extension) throws ListEmptyException {
+        File file = new File(fileName, extension);
+        Folder currentFolderContainer = getCurrentFolder();
+        currentFolderContainer.removeFile(file);
     }
 
 
-    public void deleteFolder(String folderName) {
-        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
-        if (folderList.delete(new Folder(folderName)))
-            System.out.println(folderName + " is deleted");
-        else
-            System.out.println(folderName + " is not deleted"); // For CLI debugging
+    /**
+     * Deletes a folder in the current directory.
+     * @param folderName the name of the folder to be deleted
+     * @throws ListEmptyException when the current folder container is empty.
+     */
+    public void deleteFolder(String folderName) throws ListEmptyException {
+        Folder folder = new Folder(folderName);
+        Folder currentFolderContainer = getCurrentFolder();
+        currentFolderContainer.removeFolder(folder);
     }
 
-
-    // May be changed depending on the design
-    // whether the extension of the file is modifiable upon creation
-    // I recommend adding more file datafields if this method is different from renaming the file
-    public void updateFile(String oldFileName, String oldExtension, String newFileName, String newExtension, int size) {
-        File oldFile = new File(oldFileName, oldExtension);
-        File updatedFile = new File(newFileName, newExtension, size);
-        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
-        folderList.delete(oldFile);
-        folderList.insert(updatedFile);
+    /**
+     * Renames a file in this current directory
+     * @param oldFileName the current name of the file to be renamed
+     * @param oldExtension the current extension of the file to be renamed
+     * @param newFileName the new name of the file
+     * @param newExtension the new extension of the file
+     */
+    public void renameFile(String oldFileName, String oldExtension, String newFileName, String newExtension) {
+        File oldFileMock = new File(oldFileName, oldExtension);
+        Folder currentFolderContainer = getCurrentFolder();
+        currentFolderContainer.renameAFileInsideThisFolder(oldFileMock, newFileName, newExtension);
     }
 
-    public void renameFile(String oldName, String extension, String newName) {
-         File oldFile = new File(oldName, extension);
-        LinkedList<Object> folderList = (LinkedList<Object>) getContents();
-        int index = folderList.search(oldFile);
-        if (index != -1) {
-            File fileToRename = (File) folderList.getElement(index);
-            fileToRename.setFileName(newName);
-            System.out.println("File '" + oldName + "' renamed to '" + newName + "'");
-        } else {
-            System.out.println("File '" + oldName + "' not found");
-        }
+    /**
+     * Renames a folder in this current directory
+     * @param oldFolderName the current name of the folder to be changed
+     * @param newFolderName the new name of the folder
+     */
+    public void renameFolder(String oldFolderName, String newFolderName) {
+        Folder oldFolderMock = new Folder(oldFolderName);
+        Folder currentFolderContainer = getCurrentFolder();
+        currentFolderContainer.renameAFolderInsideThisFolder(oldFolderMock, newFolderName);
     }
 
 
     // TODO: make the File and Folder have a super class
+
+    /**
+     * Searches a file and returns a list of files that matches the fileName to Search
+     * @param filename the fileName to search
+     * @return an arraylist of files that matches the fileName to search
+     */
     public MyGrowingArrayList<File> searchFile(String filename) {
         MyGrowingArrayList<File> foundFiles = new MyGrowingArrayList<>();
-        searchFileRecursion(filename, foundFiles, (LinkedList<Object>) getContents());
+        searchFileRecursion(filename, foundFiles, (LinkedList<FileSystemEntity>) getCurrentDirectoryContents());
         return foundFiles;
     }
 
     // Depth-first search traversion
-    private void searchFileRecursion(String filenameToSearch, MyGrowingArrayList<File> filesFound, LinkedList<Object> currentContents) {
+    private void searchFileRecursion(String filenameToSearch, MyGrowingArrayList<File> filesFound, LinkedList<FileSystemEntity> currentContents) {
         for (int i = 0; i < currentContents.getSize(); i++) {
             Object currentFileFolder = currentContents.getElement(i);
 
-            if (currentFileFolder instanceof File file && file.getFileName().contains(filenameToSearch))
+            if (currentFileFolder instanceof File file && file.getName().contains(filenameToSearch))
                 filesFound.insert(file);
             else if (currentFileFolder instanceof Folder folder)
-                searchFileRecursion(filenameToSearch, filesFound, folder.getContents());
+                searchFileRecursion(filenameToSearch, filesFound, folder.getSubContents());
         }
     }
 
