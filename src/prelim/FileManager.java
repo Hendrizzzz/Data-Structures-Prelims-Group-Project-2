@@ -80,32 +80,35 @@ public class FileManager {
      * @return
      */
     public Object getContents() {
-        if (this.currentDirectory.equals("source")) {
+        if (this.currentDirectory.equals("source"))
             return fileStructure;  // Return immediately
-        }
 
         String[] dir = currentDirectory.split("/");
+        LinkedList<Object> toReturn = getDirectoryContents(dir[1]);
 
-        // TODO: add more
-        LinkedList<Object> toReturn = switch (dir[1]) {
+        // Traverse, well if it's just "source/documents" or any same level, this for loop won't excute
+        for (int i = 2; i < dir.length; i++) {
+            int index = toReturn.search(dir[i]);
+            if (index != -1)
+                toReturn = ((Folder) toReturn.getElement(index)).getContents();
+            else
+                return null; // This should not execute, For CLI-debugging purposes
+        }
+
+        return toReturn;
+    }
+
+    // TODO: add more
+    private LinkedList<Object> getDirectoryContents(String dirType) {
+        return switch (dirType) {
             case "documents" -> documents;
             case "pictures" -> pictures;
             case "music" -> music;
             case "videos" -> videos;
             default -> downloads;
         };
-
-        // Traverse, well if it's just "source/documents", this for loop won't excute
-        for (int i = 2; i < dir.length; i++) {
-            int index = toReturn.search(dir[i]);
-            if (index != -1)
-                toReturn = ((Folder) toReturn.getElement(index)).getContents();
-            else
-                return null; // For CLI-debugging purposes
-        }
-
-        return toReturn;
     }
+
 
     // This assumes that you can't create a folder nor a file in the source directory
     public boolean createFile(String fileName, String extension, int size) {
@@ -113,13 +116,12 @@ public class FileManager {
         LinkedList<Object> folderList = (LinkedList<Object>) getContents();
         int index = folderList.search(newFile); // return the index of the file or -1 if it does not exist
 
-        // If the file doesn't exist, then add it to the current directory
+        // Add it to the current directory
         if (index == -1) {
             folderList.insert(newFile);
             return true;
         }
-
-        return false;
+        return false; // The file already exists. Failed to create a new File.
     }
 
     // This assumes that you can't create a folder nor a file in the source directory
@@ -128,12 +130,12 @@ public class FileManager {
         LinkedList<Object> folderList = (LinkedList<Object>) getContents();
         int index = folderList.search(newFolder); // returns the index of the folder or -1 if it does not exist
 
-        // If the folder doesn't exist yet in the current directory, then add it
+        // Add it to the current directory
         if (index == -1) {
             folderList.insert(newFolder);
             return true;
         }
-        return false;
+        return false; // The folder already exists.
     }
 
 
@@ -166,11 +168,16 @@ public class FileManager {
         folderList.insert(updatedFile);
     }
 
+
+
+
     public void renameFile(String oldName, String extension, String newName) {
         // TODO: Implement this method
+
     }
 
 
+    // TODO: make the File and Folder have a super class
     public MyGrowingArrayList<File> searchFile(String filename) {
         MyGrowingArrayList<File> foundFiles = new MyGrowingArrayList<>();
         searchFileRecursion(filename, foundFiles, (LinkedList<Object>) getContents());
