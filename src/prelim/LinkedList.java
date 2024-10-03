@@ -131,6 +131,35 @@ public class LinkedList<T> implements MyList<T> {
         return false;
     }
 
+
+    public void deleteAtIndex(int index) {
+        if (head == null) {
+            System.out.println("List is empty");
+            return;
+        }
+
+        Node<T> temp = head;
+
+        if (index == 0) {
+            head = temp.getLink();
+            size--;
+            return;
+        }
+
+        for (int i = 0; temp != null && i < index - 1; i++)
+            temp = temp.getLink();
+
+        if (temp == null || temp.getLink() == null) {
+            System.out.println("Index out of bounds");
+            return;
+        }
+
+        Node<T> next = temp.getLink().getLink();
+        temp.setLink(next);
+        size--;
+    }
+
+
     /**
      * Searches for the first occurrence of the specified element in the list.
      *
