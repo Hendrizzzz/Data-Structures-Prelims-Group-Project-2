@@ -179,6 +179,8 @@ public class FileExplorerMain {
                     .findFirst()
                     .orElse(null);
             if (file != null) {
+                // Assuming you want to modify file properties
+                // Example: just changing the name for simplicity
                 System.out.print("Enter new file name: ");
                 String newFileName = new Scanner(System.in).nextLine();
                 file.setFileName(newFileName);
@@ -192,28 +194,24 @@ public class FileExplorerMain {
     }
 
     private static void openFolder(String folderName) {
-        try {
-            Folder folder = currentDirectory.getSubfolders().stream()
-                    .filter(f -> f.getFolderName().equalsIgnoreCase(folderName))
-                    .findFirst()
-                    .orElse(null);
-            if (folder != null) {
-                currentDirectory = folder; // Update current directory
-                System.out.println("Opened folder: " + folderName);
-            } else {
-                System.out.println("Folder not found: " + folderName);
-            }
-        } catch (Exception e) {
-            System.out.println("Error opening folder: " + e.getMessage());
+        Folder folder = currentDirectory.getSubfolders().stream()
+                .filter(f -> f.getFolderName().equalsIgnoreCase(folderName))
+                .findFirst()
+                .orElse(null);
+        if (folder != null) {
+            currentDirectory = folder; // Navigate to the new folder
+            System.out.println("Opened folder: " + folder.getFolderName());
+        } else {
+            System.out.println("Folder not found: " + folderName);
         }
     }
 
     private static void goToPreviousDirectory() {
-        if (currentDirectory.getFolderName().equals("root")) {
-            System.out.println("You are already in the root directory.");
+        if (currentDirectory.getParentFolder() != null) {
+            currentDirectory = currentDirectory.getParentFolder(); // Navigate to the parent folder
+            System.out.println("Moved to previous directory: " + currentDirectory.getFolderName());
         } else {
-            // Logic to go back to the parent directory.
-            System.out.println("This feature is not yet implemented.");
+            System.out.println("You are already in the root directory.");
         }
     }
 }
