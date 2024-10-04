@@ -2,11 +2,8 @@ package prelim;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 
-public class Folder {
+public class Folder implements Comparable<Folder> {
     private String folderName;
     private String folderPath;
     private ArrayList<CustomFile> files;   // Dynamic array of files in the folder
@@ -41,33 +38,21 @@ public class Folder {
         }
     }
 
-    // Add a subfolder to the folder (using your custom circular linked list)
-    public void addSubfolder(Folder subfolder) throws ListOverflowException {
-        subfolders.insert(subfolder);
+    // CRUD Setters
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
     }
 
-    // Traverse through the subfolders in a circular manner (forward)
-    public void traverseSubfoldersForward() {
-        if (subfolders.getSize() == 0) {
-            System.out.println("No subfolders.");
-            return;
-        }
-
-        for (int i = 0; i < subfolders.getSize(); i++) {
-            System.out.println("Subfolder: " + subfolders.getElement(i).getFolderName());
-        }
+    public void setFolderPath(String folderPath) {
+        this.folderPath = folderPath;
     }
 
-    // Traverse through the subfolders in a circular manner (backward)
-    public void traverseSubfoldersBackward() {
-        if (subfolders.getSize() == 0) {
-            System.out.println("No subfolders.");
-            return;
-        }
+    public void setFiles(ArrayList<CustomFile> files) {
+        this.files = files;
+    }
 
-        for (int i = subfolders.getSize() - 1; i >= 0; i--) {
-            System.out.println("Subfolder: " + subfolders.getElement(i).getFolderName());
-        }
+    public void setSubfolders(MyDoublyLinkedCircularList<Folder> subfolders) {
+        this.subfolders = subfolders;
     }
 
     // Getters
@@ -75,28 +60,11 @@ public class Folder {
         return folderName;
     }
 
-    public ArrayList<CustomFile> getFiles() {
-        return files;
-    }
-
-    public int getSubfolderCount() {
-        return subfolders.getSize();
-    }
-
     public String getFolderPath() {
         return folderPath;
     }
 
-    // String representation for displaying folder info
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Folder: ").append(folderName).append("\n");
-        sb.append("Files:\n");
-        for (CustomFile file : files) {
-            sb.append(" - ").append(file.getFileName()).append("\n");
-        }
-        sb.append("Number of Subfolders: ").append(subfolders.getSize()).append("\n");
-        return sb.toString();
+    public ArrayList<CustomFile> getFiles() {
+        return files;
     }
-}
+
