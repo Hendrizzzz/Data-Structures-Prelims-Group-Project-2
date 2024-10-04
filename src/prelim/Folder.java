@@ -3,7 +3,8 @@ package prelim;
 import java.util.ArrayList;
 import java.util.List;
 /**
- *
+ * Reference class for an object called {@code Folder} that is utilized by the {@code FileExplorerMain}.
+ * A folder consists of several fields/ attributes such as the folder name, list of files, list of subfolders, and a parent folder
  * */
 public class Folder implements Comparable<Folder> {
     private String folderName;

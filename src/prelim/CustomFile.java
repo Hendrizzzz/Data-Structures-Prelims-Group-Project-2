@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 /**
- * Reference class for an object named {@code CustomFile} that is utilized by the {@code FileExplorerMain}.
+ * Reference class for an object called {@code CustomFile} that is utilized by the {@code FileExplorerMain}.
  * Each custom file comprises various fields/ attributes such as the file name, file extension, size, creation date, last
  * modification date, file content, file existing status, and the file path.
  * */
