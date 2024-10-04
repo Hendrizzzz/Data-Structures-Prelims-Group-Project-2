@@ -1,5 +1,6 @@
 package prelim;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class FileExplorerMain {
@@ -22,10 +23,11 @@ public class FileExplorerMain {
             System.out.println("6. Delete File in Current Directory");
             System.out.println("7. Modify Folder in Current Directory");
             System.out.println("8. Modify File in Current Directory");
-            System.out.println("9. Open a Folder");
-            System.out.println("10. Go Previous Directory");
-            System.out.println("11. Exit Program");
-            System.out.print("Choose an option (1-11): ");
+            System.out.println("9. Open a File");
+            System.out.println("10. Open a Folder");
+            System.out.println("11. Go Previous Directory");
+            System.out.println("12. Exit Program");
+            System.out.print("Choose an option (1-12): ");
 
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume the newline character
@@ -43,9 +45,7 @@ public class FileExplorerMain {
                     addNewFolder(newFolderName);
                     break;
                 case 4:
-                    System.out.print("Enter file path: ");
-                    String filePath = scanner.nextLine();
-                    addNewFileToCurrentDirectory(filePath);
+                    addNewFileToCurrentDirectory(); // Changed to the new method
                     break;
                 case 5:
                     System.out.print("Enter folder name to delete: ");
@@ -68,14 +68,19 @@ public class FileExplorerMain {
                     modifyFileInCurrentDirectory(fileToModify);
                     break;
                 case 9:
+                    System.out.println("Enter file name to open: ");
+                    String fileToOpen = scanner.nextLine();
+                    openFile(fileToOpen);
+                    break;
+                case 10:
                     System.out.print("Enter folder name to open: ");
                     String folderToOpen = scanner.nextLine();
                     openFolder(folderToOpen);
                     break;
-                case 10:
+                case 11:
                     goToPreviousDirectory();
                     break;
-                case 11:
+                case 12:
                     System.out.println("Exiting... Goodbye!");
                     scanner.close();
                     return;
@@ -95,7 +100,7 @@ public class FileExplorerMain {
     private static void displayFilesInCurrentDirectory() {
         System.out.println("Files in " + currentDirectory.getFolderName() + ":");
         for (CustomFile file : currentDirectory.getFiles()) {
-            System.out.println(" - " + file.getFileName());
+            System.out.println(" - " + file.getFileName() + file.getExtension());
         }
     }
 
@@ -109,13 +114,54 @@ public class FileExplorerMain {
         }
     }
 
-    private static void addNewFileToCurrentDirectory(String filePath) {
-        try {
-            CustomFile newFile = new CustomFile(filePath);
-            currentDirectory.addFile(newFile);
-            System.out.println("File added: " + newFile.getFileName() + " to " + currentDirectory.getFolderName());
-        } catch (Exception e) {
-            System.out.println("Error adding file: " + e.getMessage());
+    private static void addNewFileToCurrentDirectory() {
+        Scanner scanner = new Scanner(System.in);
+        String[] acceptedFormats = {".txt", ".csv", ".json", ".xml", ".md"};
+        String fileName;
+        String content;
+
+        while (true) {
+            System.out.print("Enter file name (without extension): ");
+            fileName = scanner.nextLine();
+
+            System.out.print("Enter file content: ");
+            content = scanner.nextLine();
+
+            System.out.println("Available formats: " + String.join(", ", acceptedFormats));
+            System.out.print("Enter file extension: ");
+            String extension = scanner.nextLine().trim();
+
+            // Check if the extension is valid
+            boolean isValidExtension = false;
+            for (String format : acceptedFormats) {
+                if (format.equalsIgnoreCase(extension)) {
+                    isValidExtension = true;
+                    break;
+                }
+            }
+
+            // If extension is valid, create the file
+            if (isValidExtension) {
+                try {
+                    // Creating file with the full name (fileName + extension)
+                    CustomFile newFile = new CustomFile(fileName, extension, content);
+                    currentDirectory.addFile(newFile);
+                    System.out.println("File added: " + newFile.getFileName() + newFile.getExtension() + " to " + currentDirectory.getFolderName());
+                    break; // Exit the loop after successful addition
+                } catch (IOException e) {
+                    System.out.println("Error adding file: " + e.getMessage());
+                } catch (ListOverflowException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                System.out.println("Invalid file extension. Please enter a valid text format or type 'exit' to quit.");
+                // Provide an option to exit
+                System.out.print("Type 'exit' to quit or press Enter to try again: ");
+                String response = scanner.nextLine();
+                if (response.equalsIgnoreCase("exit")) {
+                    break; // Exit the loop if user types 'exit'
+                }
+            }
         }
     }
 
@@ -143,8 +189,9 @@ public class FileExplorerMain {
                     .findFirst()
                     .orElse(null);
             if (file != null) {
-                currentDirectory.getFiles().remove(file);
-                System.out.println("File deleted: " + fileName);
+                if (file.deleteFile()) {
+                    currentDirectory.getFiles().remove(file);
+                }
             } else {
                 System.out.println("File not found: " + fileName);
             }
@@ -160,6 +207,8 @@ public class FileExplorerMain {
                     .findFirst()
                     .orElse(null);
             if (folder != null) {
+                // Assuming you want to modify folder properties
+                // Example: just changing the name for simplicity
                 System.out.print("Enter new folder name: ");
                 String newFolderName = new Scanner(System.in).nextLine();
                 folder.setFolderName(newFolderName);
@@ -190,6 +239,26 @@ public class FileExplorerMain {
             }
         } catch (Exception e) {
             System.out.println("Error modifying file: " + e.getMessage());
+        }
+    }
+
+    private static void openFile(String fileName) {
+        CustomFile file = currentDirectory.getFiles().stream()
+                .filter(f -> f.getFileName().equalsIgnoreCase(fileName))
+                .findFirst()
+                .orElse(null);
+
+        if (file != null) {
+            // Display the file attributes
+            System.out.println("Filename: " + file.getFileName());
+            System.out.println("Extension: " + file.getExtension());
+            System.out.println("Size: " + file.getSize() + " bytes");
+            System.out.println("Creation Date: " + file.getCreationDate());
+            System.out.println("Last Modified: " + file.getLastModifiedDate());
+            System.out.println("=== File ===");
+            System.out.println(file.getContent()); // Display the content of the file
+        } else {
+            System.out.println("File not found: " + fileName);
         }
     }
 
