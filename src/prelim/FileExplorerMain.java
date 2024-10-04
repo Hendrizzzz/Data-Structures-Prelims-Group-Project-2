@@ -6,12 +6,25 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
-
+/**
+ * This class is responsible for running a program that displays a menu that allows a user to manipulate directories
+ * by utilizing a list of lists.
+ * */
 public class FileExplorerMain {
     private static FileManager fileManager;
     private static Folder currentDirectory;
 
-    public static void main(String[] args) throws ListOverflowException {
+    public static void main(String[] args) {
+        FileExplorerMain app = new FileExplorerMain();
+        try {
+            app.run();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        System.exit(0);
+    }
+
+    private void run() throws ListOverflowException {
         Scanner scanner = new Scanner(System.in);
         fileManager = new FileManager(); // Initialize FileManager to create default folders
         currentDirectory = fileManager.getRootFolder(); // Set the current directory to root initially
