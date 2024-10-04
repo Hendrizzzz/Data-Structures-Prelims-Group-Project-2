@@ -12,6 +12,27 @@ import java.util.Scanner;
  * */
 public class FileExplorerMain {
     private static FileManager fileManager;
+    private static void displayMenu() {
+        System.out.println("\nCurrent Directory: " + currentDirectory.getFullPath());
+        System.out.println("""
+        ================== File Explorer ==================
+        (1) Display Folders in Current Directory
+        (2) Display Files in Current Directory
+        (3) Add a Folder in Current Directory
+        (4) Add a Text File in Current Directory
+        (5) Add a File from Existing File using File Path
+        (6) Delete Folder in Current Directory
+        (7) Delete File in Current Directory
+        (8) Modify Folder in Current Directory
+        (9) Modify File in Current Directory
+        (10) Open a File
+        (11) Open a Folder
+        (12) Go Previous Directory
+        (13) Exit Program
+        ===================================================
+        """);
+        System.out.print("Choose an option (1-13): ");
+    }
     private static Folder currentDirectory;
     /**
      * TODO
@@ -33,23 +54,8 @@ public class FileExplorerMain {
         fileManager = new FileManager(); // Initialize FileManager to create default folders
         currentDirectory = fileManager.getRootFolder(); // Set the current directory to root initially
         while (true) {
-            System.out.println("\nCurrent Directory: " + currentDirectory.getFullPath());
-            System.out.println("""
-        === File Explorer ===
-        1. Display Folders in Current Directory
-        2. Display Files in Current Directory
-        3. Add a Folder in Current Directory
-        4. Add a Text File in Current Directory
-        5. Add a File from Existing File using File Path
-        6. Delete Folder in Current Directory
-        7. Delete File in Current Directory
-        8. Modify Folder in Current Directory
-        9. Modify File in Current Directory
-        10. Open a File
-        11. Open a Folder
-        12. Go Previous Directory
-        13. Exit Program
-        """);
+            // Call displayMenu to show the file explorer menu
+            displayMenu();
             System.out.print("Choose an option (1-13): ");
             int choice = 0;
             switch (validateInput(choice)) {
