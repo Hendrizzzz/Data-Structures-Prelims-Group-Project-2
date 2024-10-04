@@ -1,108 +1,81 @@
 package prelim;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
 
-public class CustomFile extends FileSystemEntity implements Comparable<CustomFile> {
+public class CustomFile {
+    private String fileName;
     private String extension;
+    private long size;
+    private Date lastModified;
+    private Date creationDate;
+    private String filePath;
 
-    /**
-     * Default constructor for the CustomFile class.
-     * */
-    public CustomFile() {
+    // Constructor
+    public CustomFile(String filePath) throws Exception {
+        File file = new File(filePath);
 
+        if (!file.exists()) {
+            throw new IllegalArgumentException("File does not exist: " + filePath);
+        }
+
+        this.fileName = file.getName();
+        this.extension = getFileExtension(file);
+        this.size = file.length();
+        this.lastModified = new Date(file.lastModified());
+        this.filePath = file.getAbsolutePath();
+        this.creationDate = getCreationDate(file.toPath());
     }
 
-
-    /**
-     * Constructor for a file with specified name, extension, and size
-     * @param fileName Name of the file.
-     * @param extension Extension of a file (i.e. exe, txt, csv, etc...).
-     * @param size The size of a file.
-     * */
-    public CustomFile(String fileName, String extension, int size, Date creationDate) {
-        super (fileName, creationDate);
-        this.extension = extension;
-        this.setSize(size);
+    // Helper method to extract file extension
+    private String getFileExtension(File file) {
+        String name = file.getName();
+        int lastIndex = name.lastIndexOf('.');
+        return (lastIndex > 0) ? name.substring(lastIndex + 1) : "";
     }
 
-
-    /**
-     * Constructor for a file with specified name and extension only.
-     * @param fileName Name of the file.
-     * @param extension Extension of a file (i.e. exe, txt, csv, etc...).
-     * */
-    public CustomFile(String fileName, String extension, Date creationDate) {
-        super(fileName, creationDate);
-        this.extension = extension;
+    // Helper method to get creation date
+    private Date getCreationDate(Path filePath) throws Exception {
+        BasicFileAttributes attrs = Files.readAttributes(filePath, BasicFileAttributes.class);
+        return new Date(attrs.creationTime().toMillis());
     }
 
-    public CustomFile(String fileName, String extension) {
-        setName(fileName);
-        this.extension = extension;
+    // Getters
+    public String getFileName() {
+        return fileName;
     }
 
-
-    /**
-     * @return The extension of a file.
-     * */
     public String getExtension() {
         return extension;
     }
 
-    /**
-     * Sets the extension of a file.
-     * @param extension The specified extension of a file.
-     * */
-    public void setExtension(String extension) {
-        this.extension = extension;
+    public long getSize() {
+        return size;
     }
 
-
-    /**
-     * @return The size of a file.
-     * */
-    @Override
-    public int getSize() {
-        return super.getSize();
+    public Date getLastModified() {
+        return lastModified;
     }
 
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CustomFile customFile = (CustomFile) o;
-
-        return Objects.equals(getName(), customFile.getName()) &&
-                Objects.equals(extension, customFile.extension);
+    public Date getCreationDate() {
+        return creationDate;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getName(), extension);
+    public String getFilePath() {
+        return filePath;
     }
 
-
-    /**
-     * @return A string representation of a file.
-     * */
+    // String representation for displaying file info
     @Override
     public String toString() {
-        return getName() + extension;
-    }
-
-
-
-
-    /**
-     * Compares two Files.
-     * @return An integer representing 1 if the CustomFile is greater, -1 if lesser, and 0 if equals.
-     * */
-    @Override
-    public int compareTo(CustomFile o) {
-        return 0;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return String.format(
+                "File: %s\nExtension: %s\nSize: %d bytes\nLast Modified: %s\nCreation Date: %s\nPath: %s",
+                fileName, extension, size, dateFormat.format(lastModified), dateFormat.format(creationDate), filePath
+        );
     }
 }
