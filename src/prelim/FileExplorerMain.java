@@ -49,6 +49,26 @@ public class FileExplorerMain {
         }
     }
 
+    // Create a new file with the specified name and extension
+    public void createFile(String fileName, String fileExtension) {
+        try {
+            fileManager.createFile(fileName, fileExtension, 0); // Assuming size is 0 for a new file
+            // Update GUI to reflect the new file directly here
+        } catch (ListEmptyException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Create a new folder with the specified name
+    public void createFolder(String folderName) {
+        try {
+            fileManager.createFolder(folderName);
+            // Update GUI to reflect the new folder directly here
+        } catch (ListEmptyException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Delete the selected file when button is clicked
     public void deleteFile() {
         if (selectedFile != null) {
