@@ -2,6 +2,7 @@ package prelim;
 
 import java.io.IOException;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class FileExplorerMain {
@@ -109,16 +110,26 @@ public class FileExplorerMain {
     }
 
     private static void displayFoldersInCurrentDirectory() {
-        System.out.println("Folders in " + currentDirectory.getFolderName() + ":");
-        for (Folder folder : currentDirectory.getSubfolders()) {
-            System.out.println(" - " + folder.getFolderName());
+        List<Folder> subfolders = currentDirectory.getSubfolders();
+        if (subfolders.isEmpty()) {
+            System.out.println("Folders in " + currentDirectory.getFolderName() + ": N/A");
+        } else {
+            System.out.println("Folders in " + currentDirectory.getFolderName() + ":");
+            for (Folder folder : subfolders) {
+                System.out.println(" - " + folder.getFolderName());
+            }
         }
     }
 
     private static void displayFilesInCurrentDirectory() {
-        System.out.println("Files in " + currentDirectory.getFolderName() + ":");
-        for (CustomFile file : currentDirectory.getFiles()) {
-            System.out.println(" - " + file.getFileName() + file.getExtension());
+        List<CustomFile> files = currentDirectory.getFiles();
+        if (files.isEmpty()) {
+            System.out.println("Files in " + currentDirectory.getFolderName() + ": N/A");
+        } else {
+            System.out.println("Files in " + currentDirectory.getFolderName() + ":");
+            for (CustomFile file : files) {
+                System.out.println(" - " + file.getFileName() + file.getExtension());
+            }
         }
     }
 
@@ -225,6 +236,8 @@ public class FileExplorerMain {
                     .findFirst()
                     .orElse(null);
             if (folder != null) {
+                // Assuming you want to modify folder properties
+                // Example: just changing the name for simplicity
                 System.out.print("Enter new folder name: ");
                 String newFolderName = new Scanner(System.in).nextLine();
                 folder.setFolderName(newFolderName);
@@ -244,6 +257,8 @@ public class FileExplorerMain {
                     .findFirst()
                     .orElse(null);
             if (file != null) {
+                // Assuming you want to modify file properties
+                // Example: just changing the name for simplicity
                 System.out.print("Enter new file name: ");
                 String newFileName = new Scanner(System.in).nextLine();
                 file.setFileName(newFileName);
@@ -269,7 +284,7 @@ public class FileExplorerMain {
             System.out.println("Size: " + file.getSize() + " bytes");
             System.out.println("Creation Date: " + file.getCreationDate());
             System.out.println("Last Modified: " + file.getLastModifiedDate());
-            System.out.println("=== File ===");
+            System.out.println("=== File Content ===");
             System.out.println(file.getContent()); // Display the content of the file
         } else {
             System.out.println("File not found: " + fileName);
