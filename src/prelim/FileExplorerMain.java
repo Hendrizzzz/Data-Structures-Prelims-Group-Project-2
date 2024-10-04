@@ -15,14 +15,14 @@ public class FileExplorerMain {
     // Highlights file and show actions on what to do with the file
     public void onFileClick(File file) {
         this.selectedFile = file; // Store the selected file for future actions
-        // Trigger GUI to show file-related action buttons (delete, open, etc.)
+        // Trigger GUI to show file-related action buttons
         showFileActions(file);
     }
 
     // Highlights folder and show actions on what to do with the folder
     public void onFolderClick(Folder folder) {
         this.selectedFolder = folder; // Store the selected folder for future actions
-        // Trigger GUI to show folder-related action buttons (delete, open, etc.)
+        // Trigger GUI to show folder-related action buttons
         showFolderActions(folder);
     }
 
