@@ -3,6 +3,8 @@ package prelim;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class FileExplorerMain {
@@ -32,8 +34,25 @@ public class FileExplorerMain {
             System.out.println("13. Exit Program");
             System.out.print("Choose an option (1-13): ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character
+            int choice = 0;
+            boolean validInput = false; // Flag to check if input is valid
+
+            // Loop to ensure valid input for the menu choice
+            while (!validInput) {
+                System.out.print("Choose an option (1-13): ");
+                try {
+                    choice = scanner.nextInt();
+                    scanner.nextLine(); // Consume the newline character
+                    if (choice < 1 || choice > 13) {
+                        System.out.println("Invalid option. Please choose a valid number (1-12).");
+                    } else {
+                        validInput = true; // Exit loop if input is valid
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input. Please enter a number between 1 and 12.");
+                    scanner.nextLine(); // Clear the invalid input
+                }
+            }
 
             switch (choice) {
                 case 1:
@@ -90,22 +109,32 @@ public class FileExplorerMain {
                 case 13:
                     break;
                 default:
-                    System.out.println("Invalid option. Please choose a valid number (1-13).");
+                    System.out.println("Invalid option. Please choose a valid number (1-11).");
             }
         }
     }
 
     private static void displayFoldersInCurrentDirectory() {
-        System.out.println("Folders in " + currentDirectory.getFolderName() + ":");
-        for (Folder folder : currentDirectory.getSubfolders()) {
-            System.out.println(" - " + folder.getFolderName());
+        List<Folder> subfolders = currentDirectory.getSubfolders();
+        if (subfolders.isEmpty()) {
+            System.out.println("Folders in " + currentDirectory.getFolderName() + ": N/A");
+        } else {
+            System.out.println("Folders in " + currentDirectory.getFolderName() + ":");
+            for (Folder folder : subfolders) {
+                System.out.println(" - " + folder.getFolderName());
+            }
         }
     }
 
     private static void displayFilesInCurrentDirectory() {
-        System.out.println("Files in " + currentDirectory.getFolderName() + ":");
-        for (CustomFile file : currentDirectory.getFiles()) {
-            System.out.println(" - " + file.getFileName() + file.getExtension());
+        List<CustomFile> files = currentDirectory.getFiles();
+        if (files.isEmpty()) {
+            System.out.println("Files in " + currentDirectory.getFolderName() + ": N/A");
+        } else {
+            System.out.println("Files in " + currentDirectory.getFolderName() + ":");
+            for (CustomFile file : files) {
+                System.out.println(" - " + file.getFileName() + file.getExtension());
+            }
         }
     }
 
