@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+
 /**
  * This class is responsible for running a program that displays a menu that allows a user to manipulate directories
  * by utilizing a list of lists.
@@ -13,11 +14,11 @@ import java.util.Scanner;
 public class FileExplorerMain {
     private static Folder currentDirectory;
 
-
-
     /**
-     * TODO
-     * */
+     * The main entry point for the program. It initializes the application and starts the menu-driven loop.
+     *
+     * @param args the command-line arguments (not used)
+     */
     public static void main(String[] args) {
         FileExplorerMain app = new FileExplorerMain();
         try {
@@ -28,10 +29,12 @@ public class FileExplorerMain {
         System.exit(0);
     }
 
-
     /**
-     * TODO
-     * */
+     * Runs the main loop for the file explorer application. It displays the menu and processes user inputs for directory
+     * and file operations.
+     *
+     * @throws ListOverflowException if the maximum number of folders or files is exceeded
+     */
     public void run() throws ListOverflowException {
         Scanner scanner = new Scanner(System.in);
         FileManager fileManager = new FileManager(); // Initialize FileManager to create default folders
@@ -59,6 +62,9 @@ public class FileExplorerMain {
         }
     }
 
+    /**
+     * Displays the file explorer menu, showing the current directory and available operations for the user.
+     */
     private void showMenu() {
         System.out.printf("""
                 ╔═══════════════════════════════════════╗
@@ -85,8 +91,10 @@ public class FileExplorerMain {
     }
 
     /**
-     * Validates the input if it satisfies the conditions if the user picked a number within the range of 1-13.
-     * */
+     * Validates the user's input, ensuring they select a number between 1 and 13 from the menu.
+     *
+     * @return the valid choice selected by the user
+     */
     private int getChoiceWithValidation(){
         int choice = 0;
         Scanner scanner = new Scanner(System.in);
@@ -109,10 +117,9 @@ public class FileExplorerMain {
         return choice;
     }
 
-
     /**
-     * TODO
-     * */
+     * Displays all the folders in the current directory. If no folders are present, it displays a message indicating "N/A".
+     */
     private static void displayFoldersInCurrentDirectory() {
         List<Folder> subfolders = currentDirectory.getSubfolders();
         if (subfolders.isEmpty()) {
@@ -125,10 +132,9 @@ public class FileExplorerMain {
         }
     }
 
-
     /**
-     * TODO
-     * */
+     * Displays all the files in the current directory. If no files are present, it displays a message indicating "N/A".
+     */
     private static void displayFilesInCurrentDirectory() {
         List<CustomFile> files = currentDirectory.getFiles();
         if (files.isEmpty()) {
@@ -141,10 +147,10 @@ public class FileExplorerMain {
         }
     }
 
-
     /**
-     * TODO
-     * */
+     * Prompts the user to enter a new folder name and adds the folder to the current directory.
+     * If there is an error during folder creation, it displays an error message.
+     */
     private static void addNewFolder() {
         try {
             String folderName = readString("Enter new folder name: ");
@@ -156,10 +162,10 @@ public class FileExplorerMain {
         }
     }
 
-
     /**
-     * TODO
-     * */
+     * Allows the user to create a new file in the current directory. The user is prompted for the file name, content,
+     * and extension. It also checks for name conflicts and ensures valid input.
+     */
     private static void addNewFileToCurrentDirectory() {
         Scanner scanner = new Scanner(System.in);
         String[] acceptedFormats = {".txt", ".csv", ".json", ".xml", ".md"};
@@ -190,6 +196,10 @@ public class FileExplorerMain {
         }
     }
 
+    /**
+     * Imports an existing file from a given path and adds it to the current directory.
+     * If the operation fails, an error message is displayed.
+     */
     private static void addFileFromExistingPath() {
         try {
             String filePath = readString("Enter file path of the file in your desktop: " );
@@ -202,11 +212,13 @@ public class FileExplorerMain {
         }
     }
 
-
-
     /**
-     * TODO
-     * */
+     * Checks whether a file with the specified name and extension already exists in the current directory.
+     *
+     * @param fileName  the name of the file (without extension)
+     * @param extension the file extension (e.g., .txt, .json)
+     * @return true if the file already exists, false otherwise
+     */
     private static boolean fileAlreadyInDirectory(String fileName, String extension) {
         // Checks all the files in the directory if it has the same file name with the file being created
         for (CustomFile file: currentDirectory.getFiles())
@@ -216,10 +228,12 @@ public class FileExplorerMain {
         return false;
     }
 
-
     /**
-     * TODO
-     * */
+     * Asks the user if they want to exit the file creation process, giving them the option to type 'exit' to quit.
+     *
+     * @param scanner the scanner to read user input
+     * @return true if the user chooses to exit, false otherwise
+     */
     private static boolean askToExit(Scanner scanner) {
         // Provide an option to exit
         System.out.print("Type 'exit' to quit or press Enter to try again: ");
@@ -227,10 +241,15 @@ public class FileExplorerMain {
         return response.equalsIgnoreCase("exit");
     }
 
-
     /**
-     * TODO
-     * */
+     * Creates a new file in the current directory with the specified name, content, and extension.
+     *
+     * @param fileName  the name of the file
+     * @param content   the content of the file
+     * @param extension the file extension (e.g., .txt, .json)
+     * @throws IOException if there is an issue creating the file
+     * @throws ListOverflowException if the maximum number of files in the directory is exceeded
+     */
     private static void createFileToDirectory(String fileName, String content, String extension) throws IOException, ListOverflowException {
         // Creating file with the full name (fileName + extension)
         CustomFile newFile = new CustomFile(fileName, extension, content);
@@ -238,10 +257,13 @@ public class FileExplorerMain {
         System.out.println("File added: " + newFile.getFileName() + newFile.getExtension() + " to " + currentDirectory.getFolderName());
     }
 
-
     /**
-     * TODO
-     * */
+     * Prompts the user to enter a valid file extension from a list of accepted formats.
+     *
+     * @param scanner         the scanner to read user input
+     * @param acceptedFormats the array of accepted file extensions
+     * @return the valid file extension entered by the user, or null if the input is invalid
+     */
     private static String askForFileExtension(Scanner scanner, String[] acceptedFormats) {
         System.out.println("Available formats: " + String.join(", ", acceptedFormats));
         System.out.print("Enter file extension <include '.'>: ");
@@ -254,28 +276,32 @@ public class FileExplorerMain {
         return null;
     }
 
-
     /**
-     * TODO
-     * */
+     * Prompts the user to enter the content for the file being created.
+     *
+     * @param scanner the scanner to read user input
+     * @return the content entered by the user
+     */
     private static String askForFileContent(Scanner scanner) {
         System.out.print("Enter file content: ");
         return scanner.nextLine();
     }
 
-
     /**
-     * TODO
-     * */
+     * Prompts the user to enter the name of the file they wish to create, excluding the file extension.
+     *
+     * @param scanner the scanner to read user input
+     * @return the file name entered by the user
+     */
     private static String askForFileName(Scanner scanner) {
         System.out.print("Enter file name (without extension): ");
         return scanner.nextLine();
     }
 
-
     /**
-     * TODO
-     * */
+     * Prompts the user to enter the name of a folder in the current directory, and deletes it if found.
+     * Displays an appropriate message if the folder is not found or if there is an error.
+     */
     private static void deleteFolderInCurrentDirectory() {
         try {
             String folderName = readString("Enter folder name to delete: ");
@@ -293,10 +319,10 @@ public class FileExplorerMain {
         }
     }
 
-
     /**
-     * TODO
-     * */
+     * Prompts the user to enter the name of a file in the current directory, and deletes it if found.
+     * Displays an appropriate message if the file is not found or if there is an error.
+     */
     private static void deleteFileInCurrentDirectory() {
         try {
             String fileName = promptFileName();
@@ -322,10 +348,10 @@ public class FileExplorerMain {
         return scanner.nextLine();
     }
 
-
     /**
-     * TODO
-     * */
+     * Prompts the user to enter the name of a folder in the current directory and allows them to modify its properties.
+     * Currently, the folder's name can be changed.
+     */
     private static void modifyFolderInCurrentDirectory() {
         try {
             String folderName = readString("Enter folder name to modify: ");
@@ -348,10 +374,10 @@ public class FileExplorerMain {
         }
     }
 
-
     /**
-     * TODO
-     * */
+     * Prompts the user to enter the name of a file in the current directory and allows them to modify its properties.
+     * Currently, the file's name can be changed.
+     */
     private static void modifyFileInCurrentDirectory() {
         try {
             String fileName = promptFileName();
@@ -374,10 +400,10 @@ public class FileExplorerMain {
         }
     }
 
-
     /**
-     * TODO
-     * */
+     * Opens a file from the current directory. If the file exists locally, it opens using the default application.
+     * If the file doesn't exist on the system, it displays the file's content in the console.
+     */
     private static void openFile() {
         String fileName = promptFileName();
         // Search for the file in the current directory
@@ -398,10 +424,11 @@ public class FileExplorerMain {
         return readString("Enter file name: ");
     }
 
-
     /**
-     * TODO
-     * */
+     * Prompts the user to enter the name of a file and searches for the file in the current directory.
+     *
+     * @return the found file, or null if the file is not found
+     */
     private static CustomFile findFileInDirectory(String fileName) {
         for (CustomFile file: currentDirectory.getFiles()) {
             if (file.getFileName().equalsIgnoreCase(fileName) || (file.getFileName() + file.getExtension()).equalsIgnoreCase(fileName)) {
@@ -411,10 +438,11 @@ public class FileExplorerMain {
         return null;
     }
 
-
     /**
-     * TODO
-     * */
+     * Opens the specified file using the system's default application.
+     *
+     * @param file the file to open
+     */
     private static void openExistingFile(CustomFile file) {
         try {
             // Use Desktop class to open the file
@@ -426,10 +454,12 @@ public class FileExplorerMain {
         }
     }
 
-
     /**
-     * TODO
-     * */
+     * Displays detailed information about the specified file, including name, extension, size, creation date,
+     * and content.
+     *
+     * @param file the file whose content is displayed
+     */
     private static void displayFileContent(CustomFile file) {
         System.out.println("Filename: " + file.getFileName());
         System.out.println("Extension: " + file.getExtension());
@@ -440,10 +470,10 @@ public class FileExplorerMain {
         System.out.println(file.getContent());
     }
 
-
     /**
-     * TODO
-     * */
+     * Prompts the user to enter the name of a folder and opens it. If the folder is found in the current directory,
+     * the current directory is updated to the selected folder.
+     */
     private static void openFolder() {
         String folderName = readString("Enter folder name to open: ");
         Folder selectedFolder = currentDirectory.getSubfolders().stream()
@@ -458,10 +488,10 @@ public class FileExplorerMain {
         }
     }
 
-
     /**
-     * TODO
-     * */
+     * Navigates to the previous (parent) directory. If the current directory is the root, it displays a message indicating
+     * that the user is already in the root directory.
+     */
     private static void goToPreviousDirectory() {
         if (currentDirectory.getParentFolder() != null) {
             currentDirectory = currentDirectory.getParentFolder(); // Set current directory to parent folder
@@ -469,6 +499,4 @@ public class FileExplorerMain {
         } else
             System.out.println("You are already in the root directory.");
     }
-
-
 }
