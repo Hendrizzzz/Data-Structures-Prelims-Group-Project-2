@@ -140,4 +140,14 @@ public class MyDoublyLinkedCircularList<T> implements MyList<T> {
 
         return -1;
     }
+    /**
+     * @return A string representation of a {@code MyDoublyCircularList}.
+     * */
+    @Override
+    public String toString() {
+        return "MyDoublyLinkedCircularList{" +
+                "head=" + head +
+                ", size=" + size +
+                '}';
+    }
 }
