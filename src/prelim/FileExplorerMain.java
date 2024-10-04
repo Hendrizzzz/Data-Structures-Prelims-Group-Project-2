@@ -271,13 +271,9 @@ public class FileExplorerMain {
                     // If the file is an existing file, open it using the system's default application
                     try {
                         // Use Desktop class to open the file
-                        File f = new File(currentDirectory.getFolderName() + "/" + fileName);
-                        if (f.exists()) {
-                            Desktop.getDesktop().open(f); // Open the file with default application
-                            System.out.println("Opened file: " + file.getFileName());
-                        } else {
-                            System.out.println("File does not exist at the specified path.");
-                        }
+                        File f = new File(file.getDesktopPath());
+                        Desktop.getDesktop().open(f); // Open the file with default application
+                        System.out.println("Opened file: " + file.getFileName());
                     } catch (IOException e) {
                         System.out.println("Error opening the file: " + e.getMessage());
                     }

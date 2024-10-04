@@ -15,6 +15,7 @@ public class CustomFile implements Comparable<CustomFile> {
     private Date lastModifiedDate;
     private String content; // To hold the content of the file
     private boolean isExistingFile; // New field to indicate if the file is existing
+    private String desktopPath;
 
     // Constructor to create a CustomFile from an existing file
     public CustomFile(String filePath) throws Exception {
@@ -27,6 +28,8 @@ public class CustomFile implements Comparable<CustomFile> {
         this.extension = getFileExtension(file);
         this.size = file.length();
         this.content = new String(Files.readAllBytes(file.toPath())); // Read file content
+        this.desktopPath = filePath;
+
 
         BasicFileAttributes attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
         this.creationDate = new Date(attrs.creationTime().toMillis());
@@ -116,6 +119,10 @@ public class CustomFile implements Comparable<CustomFile> {
     public void setContent(String content) {
         this.content = content;
         this.lastModifiedDate = new Date(); // Update last modified date
+    }
+
+    public String getDesktopPath() {
+        return desktopPath;
     }
 
     // compareTo method (compare by file name)
