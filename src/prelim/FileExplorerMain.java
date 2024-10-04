@@ -136,13 +136,13 @@ public class FileExplorerMain {
      * Displays all the files in the current directory. If no files are present, it displays a message indicating "N/A".
      */
     private static void displayFilesInCurrentDirectory() {
-        List<CustomFile> files = currentDirectory.getFiles();
-        if (files.isEmpty()) {
+        MyDoublyLinkedCircularList<CustomFile> files = currentDirectory.getFiles();
+        if (files.getSize() == 0) {
             System.out.println("Files in " + currentDirectory.getFolderName() + ": N/A");
         } else {
             System.out.println("Files in " + currentDirectory.getFolderName() + ":");
-            for (CustomFile file : files) {
-                System.out.println(" - " + file.getFileName() + file.getExtension());
+            for (int i = 0; i < files.getSize(); i++) {
+                System.out.println(" - " + files.getElement(i).getFileName() + files.getElement(i).getExtension());
             }
         }
     }
@@ -221,8 +221,9 @@ public class FileExplorerMain {
      */
     private static boolean fileAlreadyInDirectory(String fileName, String extension) {
         // Checks all the files in the directory if it has the same file name with the file being created
-        for (CustomFile file: currentDirectory.getFiles())
-            if (file.getFileName().equalsIgnoreCase(fileName) && file.getExtension().equalsIgnoreCase(extension)) {
+        MyDoublyLinkedCircularList<CustomFile> files = currentDirectory.getFiles();
+        for (int i = 0; i < files.getSize(); i++)
+            if (files.getElement(i).getFileName().equalsIgnoreCase(fileName) && files.getElement(i).getExtension().equalsIgnoreCase(extension)) {
                 return true;
         }
         return false;
@@ -326,20 +327,25 @@ public class FileExplorerMain {
     private static void deleteFileInCurrentDirectory() {
         try {
             String fileName = promptFileName();
-            CustomFile file = currentDirectory.getFiles().stream()
-                    .filter(f -> f.getFileName().equalsIgnoreCase(fileName))
-                    .findFirst()
-                    .orElse(null);
+            CustomFile file = null;
+            MyDoublyLinkedCircularList<CustomFile> files = currentDirectory.getFiles();
+            for (int i = 0; i < files.getSize(); i++)
+                if (isSameFileName(fileName, files, i))
+                    file = files.getElement(i);
             if (file != null) {
-                if (file.deleteFile()) {
-                    currentDirectory.getFiles().remove(file);
-                }
-            } else {
-                System.out.println("File not found: " + fileName);
+                currentDirectory.getFiles().delete(file);
+                file.deleteFile();
             }
+            else
+                System.out.println("File not found: " + fileName);
         } catch (Exception e) {
             System.out.println("Error deleting file: " + e.getMessage());
         }
+    }
+
+    private static boolean isSameFileName(String fileName, MyDoublyLinkedCircularList<CustomFile> files, int i) {
+        CustomFile file = files.getElement(i);
+        return fileName.equalsIgnoreCase(file.getFileName()) || fileName.equalsIgnoreCase(file.getFileName() + file.getExtension());
     }
 
     private static String readString(String message) {
@@ -381,10 +387,11 @@ public class FileExplorerMain {
     private static void modifyFileInCurrentDirectory() {
         try {
             String fileName = promptFileName();
-            CustomFile file = currentDirectory.getFiles().stream()
-                    .filter(f -> f.getFileName().equalsIgnoreCase(fileName))
-                    .findFirst()
-                    .orElse(null);
+            CustomFile file = null;
+            MyDoublyLinkedCircularList<CustomFile> files = currentDirectory.getFiles();
+            for (int i = 0; i < files.getSize(); i++)
+                if (fileName.equalsIgnoreCase(files.getElement(i).getFileName()))
+                    file = files.getElement(i);
             if (file != null) {
                 // Assuming you want to modify file properties
                 // Example: just changing the name for simplicity
@@ -430,10 +437,11 @@ public class FileExplorerMain {
      * @return the found file, or null if the file is not found
      */
     private static CustomFile findFileInDirectory(String fileName) {
-        for (CustomFile file: currentDirectory.getFiles()) {
-            if (file.getFileName().equalsIgnoreCase(fileName) || (file.getFileName() + file.getExtension()).equalsIgnoreCase(fileName)) {
+        MyDoublyLinkedCircularList<CustomFile> files = currentDirectory.getFiles();
+        for (int i = 0; i < files.getSize(); i++) {
+            CustomFile file = files.getElement(i);
+            if (file.getFileName().equalsIgnoreCase(fileName) || (file.getFileName() + file.getExtension()).equalsIgnoreCase(fileName))
                 return file;
-            }
         }
         return null;
     }

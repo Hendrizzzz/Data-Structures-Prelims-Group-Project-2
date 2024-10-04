@@ -90,12 +90,8 @@ public class Folder implements Comparable<Folder> {
      *
      * @return A list of files in the folder.
      */
-    public List<CustomFile> getFiles() {
-        List<CustomFile> fileList = new ArrayList<>();
-        for (int i = 0; i < files.getSize(); i++) {
-            fileList.add(files.getElement(i));
-        }
-        return fileList;
+    public MyDoublyLinkedCircularList<CustomFile> getFiles() {
+        return files;
     }
 
     /**
