@@ -34,20 +34,22 @@ public class FileExplorerMain {
         currentDirectory = fileManager.getRootFolder(); // Set the current directory to root initially
         while (true) {
             System.out.println("\nCurrent Directory: " + currentDirectory.getFullPath());
-            System.out.println("=== File Explorer ===");
-            System.out.println("1. Display Folders in Current Directory");
-            System.out.println("2. Display Files in Current Directory");
-            System.out.println("3. Add a Folder in Current Directory");
-            System.out.println("4. Add a Text File in Current Directory");
-            System.out.println("5. Add a File from Existing File using File Path");
-            System.out.println("6. Delete Folder in Current Directory");
-            System.out.println("7. Delete File in Current Directory");
-            System.out.println("8. Modify Folder in Current Directory");
-            System.out.println("9. Modify File in Current Directory");
-            System.out.println("10. Open a File");
-            System.out.println("11. Open a Folder");
-            System.out.println("12. Go Previous Directory");
-            System.out.println("13. Exit Program");
+            System.out.println("""
+        === File Explorer ===
+        1. Display Folders in Current Directory
+        2. Display Files in Current Directory
+        3. Add a Folder in Current Directory
+        4. Add a Text File in Current Directory
+        5. Add a File from Existing File using File Path
+        6. Delete Folder in Current Directory
+        7. Delete File in Current Directory
+        8. Modify Folder in Current Directory
+        9. Modify File in Current Directory
+        10. Open a File
+        11. Open a Folder
+        12. Go Previous Directory
+        13. Exit Program
+        """);
             System.out.print("Choose an option (1-13): ");
             int choice = 0;
             boolean validInput = false; // Flag to check if input is valid
