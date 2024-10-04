@@ -3,13 +3,13 @@ package prelim;
 import java.util.Date;
 import java.util.Objects;
 
-public class File extends FileSystemEntity implements Comparable<File> {
+public class CustomFile extends FileSystemEntity implements Comparable<CustomFile> {
     private String extension;
 
     /**
-     * Default constructor for the File class.
+     * Default constructor for the CustomFile class.
      * */
-    public File() {
+    public CustomFile() {
 
     }
 
@@ -20,7 +20,7 @@ public class File extends FileSystemEntity implements Comparable<File> {
      * @param extension Extension of a file (i.e. exe, txt, csv, etc...).
      * @param size The size of a file.
      * */
-    public File(String fileName, String extension, int size, Date creationDate) {
+    public CustomFile(String fileName, String extension, int size, Date creationDate) {
         super (fileName, creationDate);
         this.extension = extension;
         this.setSize(size);
@@ -32,12 +32,12 @@ public class File extends FileSystemEntity implements Comparable<File> {
      * @param fileName Name of the file.
      * @param extension Extension of a file (i.e. exe, txt, csv, etc...).
      * */
-    public File(String fileName, String extension, Date creationDate) {
+    public CustomFile(String fileName, String extension, Date creationDate) {
         super(fileName, creationDate);
         this.extension = extension;
     }
 
-    public File(String fileName, String extension) {
+    public CustomFile(String fileName, String extension) {
         setName(fileName);
         this.extension = extension;
     }
@@ -74,10 +74,10 @@ public class File extends FileSystemEntity implements Comparable<File> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        File file = (File) o;
+        CustomFile customFile = (CustomFile) o;
 
-        return Objects.equals(getName(), file.getName()) &&
-                Objects.equals(extension, file.extension);
+        return Objects.equals(getName(), customFile.getName()) &&
+                Objects.equals(extension, customFile.extension);
     }
 
     @Override
@@ -99,10 +99,10 @@ public class File extends FileSystemEntity implements Comparable<File> {
 
     /**
      * Compares two Files.
-     * @return An integer representing 1 if the File is greater, -1 if lesser, and 0 if equals.
+     * @return An integer representing 1 if the CustomFile is greater, -1 if lesser, and 0 if equals.
      * */
     @Override
-    public int compareTo(File o) {
+    public int compareTo(CustomFile o) {
         return 0;
     }
 }
