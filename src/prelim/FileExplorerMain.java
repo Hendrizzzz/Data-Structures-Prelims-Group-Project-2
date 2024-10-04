@@ -1,5 +1,7 @@
 package prelim;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -18,16 +20,17 @@ public class FileExplorerMain {
             System.out.println("1. Display Folders in Current Directory");
             System.out.println("2. Display Files in Current Directory");
             System.out.println("3. Add a Folder in Current Directory");
-            System.out.println("4. Add a File in Current Directory");
-            System.out.println("5. Delete Folder in Current Directory");
-            System.out.println("6. Delete File in Current Directory");
-            System.out.println("7. Modify Folder in Current Directory");
-            System.out.println("8. Modify File in Current Directory");
-            System.out.println("9. Open a File");
-            System.out.println("10. Open a Folder");
-            System.out.println("11. Go Previous Directory");
-            System.out.println("12. Exit Program");
-            System.out.print("Choose an option (1-12): ");
+            System.out.println("4. Add a Text File in Current Directory");
+            System.out.println("5. Add a File from Existing File using File Path");
+            System.out.println("6. Delete Folder in Current Directory");
+            System.out.println("7. Delete File in Current Directory");
+            System.out.println("8. Modify Folder in Current Directory");
+            System.out.println("9. Modify File in Current Directory");
+            System.out.println("10. Open a File");
+            System.out.println("11. Open a Folder");
+            System.out.println("12. Go Previous Directory");
+            System.out.println("13. Exit Program");
+            System.out.print("Choose an option (1-13): ");
 
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume the newline character
@@ -84,8 +87,10 @@ public class FileExplorerMain {
                     System.out.println("Exiting... Goodbye!");
                     scanner.close();
                     return;
+                case 13:
+                    break;
                 default:
-                    System.out.println("Invalid option. Please choose a valid number (1-11).");
+                    System.out.println("Invalid option. Please choose a valid number (1-13).");
             }
         }
     }
@@ -243,6 +248,35 @@ public class FileExplorerMain {
     }
 
     private static void openFile(String fileName) {
+        // Search for the file in the current directory
+        for (CustomFile file : currentDirectory.getFiles()) {
+            if (file.getFileName().equalsIgnoreCase(fileName)) {
+                if (file.isExistingFile()) {
+                    // If the file is an existing file, open it using the system's default application
+                    try {
+                        // Use Desktop class to open the file
+                        File f = new File(file.getDesktopPath());
+                        Desktop.getDesktop().open(f); // Open the file with default application
+                        System.out.println("Opened file: " + file.getFileName());
+                    } catch (IOException e) {
+                        System.out.println("Error opening the file: " + e.getMessage());
+                    }
+                } else {
+                    // If the file was created through user input, display its content in the console
+                    System.out.println("Filename: " + file.getFileName());
+                    System.out.println("Extension: " + file.getExtension());
+                    System.out.println("Size: " + file.getSize() + " bytes");
+                    System.out.println("Creation Date: " + file.getCreationDate());
+                    System.out.println("Last Modified: " + file.getLastModifiedDate());
+                    System.out.println("=== File ===");
+                    System.out.println(file.getContent()); // Display content
+                }
+                return; // Exit after processing the file
+            }
+        }
+
+
+        /* Old code
         CustomFile file = currentDirectory.getFiles().stream()
                 .filter(f -> f.getFileName().equalsIgnoreCase(fileName))
                 .findFirst()
@@ -255,11 +289,14 @@ public class FileExplorerMain {
             System.out.println("Size: " + file.getSize() + " bytes");
             System.out.println("Creation Date: " + file.getCreationDate());
             System.out.println("Last Modified: " + file.getLastModifiedDate());
-            System.out.println("=== File ===");
+            System.out.println("=== File Content ===");
             System.out.println(file.getContent()); // Display the content of the file
         } else {
             System.out.println("File not found: " + fileName);
+>>>>>>> src/prelim/FileExplorerMain.java
         }
+        System.out.println("File not found in the current directory.");
+         */
     }
 
     private static void openFolder(String folderName) {
