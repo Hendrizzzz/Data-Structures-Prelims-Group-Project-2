@@ -42,11 +42,11 @@ public class Folder extends FileSystemEntity implements Comparable<Folder> {
 
 
     /**
-     * Adds a file to this Folder
-     * @param file the file to be added in this Folder.
+     * Adds a customFile to this Folder
+     * @param customFile the customFile to be added in this Folder.
      */
-    public void addFile(File file) {
-        addFileSystemEntity(file);
+    public void addFile(CustomFile customFile) {
+        addFileSystemEntity(customFile);
     }
 
     /**
@@ -82,12 +82,12 @@ public class Folder extends FileSystemEntity implements Comparable<Folder> {
 
 
     /**
-     * Deletes a file in this Folder
-     * @param file the file to be deleted.
+     * Deletes a customFile in this Folder
+     * @param customFile the customFile to be deleted.
      * @throws ListEmptyException when this Folder is empty.
      */
-    public void removeFile(File file) throws ListEmptyException {
-        removeFileSystemEntity(file);
+    public void removeFile(CustomFile customFile) throws ListEmptyException {
+        removeFileSystemEntity(customFile);
     }
 
     /**
@@ -109,17 +109,17 @@ public class Folder extends FileSystemEntity implements Comparable<Folder> {
                 return; // stop the traversing now
             }
 
-        throw new NoSuchElementException("File / Folder not found. Cannot delete. ");
+        throw new NoSuchElementException("CustomFile / Folder not found. Cannot delete. ");
     }
 
 
-    public void renameAFileInsideThisFolder(File oldFile, String name, String extension) {
+    public void renameAFileInsideThisFolder(CustomFile oldCustomFile, String name, String extension) {
         for (int i = 0; i < subContents.getSize(); i++) {
             FileSystemEntity currentEntity = subContents.getElement(i);
-            if (isSameEntity(currentEntity, oldFile)) {
-                File fileToUpdate = (File) currentEntity;
-                fileToUpdate.setName(name);
-                fileToUpdate.setExtension(extension);
+            if (isSameEntity(currentEntity, oldCustomFile)) {
+                CustomFile customFileToUpdate = (CustomFile) currentEntity;
+                customFileToUpdate.setName(name);
+                customFileToUpdate.setExtension(extension);
                 return;
             }
         }

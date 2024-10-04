@@ -150,9 +150,9 @@ public class FileManager {
      * @param size the size of the file to Create
      */
     public void createFile(String fileName, String extension, int size) {
-        File newFile = new File(fileName, extension, size, new Date());
+        CustomFile newCustomFile = new CustomFile(fileName, extension, size, new Date());
         Folder currentFolderContainer = getCurrentFolder();
-        currentFolderContainer.addFile(newFile);
+        currentFolderContainer.addFile(newCustomFile);
     }
 
     /**
@@ -174,9 +174,9 @@ public class FileManager {
      * @throws ListEmptyException when the current folder container is empty.
      */
     public void deleteFile(String fileName, String extension) throws ListEmptyException {
-        File file = new File(fileName, extension);
+        CustomFile customFile = new CustomFile(fileName, extension);
         Folder currentFolderContainer = getCurrentFolder();
-        currentFolderContainer.removeFile(file);
+        currentFolderContainer.removeFile(customFile);
     }
 
 
@@ -199,9 +199,9 @@ public class FileManager {
      * @param newExtension the new extension of the file
      */
     public void renameFile(String oldFileName, String oldExtension, String newFileName, String newExtension) {
-        File oldFileMock = new File(oldFileName, oldExtension);
+        CustomFile oldCustomFileMock = new CustomFile(oldFileName, oldExtension);
         Folder currentFolderContainer = getCurrentFolder();
-        currentFolderContainer.renameAFileInsideThisFolder(oldFileMock, newFileName, newExtension);
+        currentFolderContainer.renameAFileInsideThisFolder(oldCustomFileMock, newFileName, newExtension);
     }
 
     /**
@@ -216,26 +216,26 @@ public class FileManager {
     }
 
 
-    // TODO: make the File and Folder have a super class
+    // TODO: make the CustomFile and Folder have a super class
 
     /**
      * Searches a file and returns a list of files that matches the fileName to Search
      * @param filename the fileName to search
      * @return an arraylist of files that matches the fileName to search
      */
-    public MyGrowingArrayList<File> searchFile(String filename) {
-        MyGrowingArrayList<File> foundFiles = new MyGrowingArrayList<>();
+    public MyGrowingArrayList<CustomFile> searchFile(String filename) {
+        MyGrowingArrayList<CustomFile> foundFiles = new MyGrowingArrayList<>();
         searchFileRecursion(filename, foundFiles, (LinkedList<FileSystemEntity>) getCurrentDirectoryContents());
         return foundFiles;
     }
 
     // Depth-first search traversion
-    private void searchFileRecursion(String filenameToSearch, MyGrowingArrayList<File> filesFound, LinkedList<FileSystemEntity> currentContents) {
+    private void searchFileRecursion(String filenameToSearch, MyGrowingArrayList<CustomFile> filesFound, LinkedList<FileSystemEntity> currentContents) {
         for (int i = 0; i < currentContents.getSize(); i++) {
             Object currentFileFolder = currentContents.getElement(i);
 
-            if (currentFileFolder instanceof File file && file.getName().contains(filenameToSearch))
-                filesFound.insert(file);
+            if (currentFileFolder instanceof CustomFile customFile && customFile.getName().contains(filenameToSearch))
+                filesFound.insert(customFile);
             else if (currentFileFolder instanceof Folder folder)
                 searchFileRecursion(filenameToSearch, filesFound, folder.getSubContents());
         }

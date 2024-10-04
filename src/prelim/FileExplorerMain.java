@@ -5,18 +5,18 @@ import java.io.IOException;
 
 public class FileExplorerMain {
     private FileManager fileManager;
-    private File selectedFile;
+    private CustomFile selectedCustomFile;
     private Folder selectedFolder;
 
     public FileExplorerMain() {
         fileManager = new FileManager();
     }
 
-    // Highlights file and show actions on what to do with the file
-    public void onFileClick(File file) {
-        this.selectedFile = file; // Store the selected file for future actions
-        // Trigger GUI to show file-related action buttons
-        showFileActions(file);
+    // Highlights customFile and show actions on what to do with the customFile
+    public void onFileClick(CustomFile customFile) {
+        this.selectedCustomFile = customFile; // Store the selected customFile for future actions
+        // Trigger GUI to show customFile-related action buttons
+        showFileActions(customFile);
     }
 
     // Highlights folder and show actions on what to do with the folder
@@ -28,9 +28,9 @@ public class FileExplorerMain {
 
     // Open the selected file in its default application when button is clicked
     public void openFile() {
-        if (selectedFile != null) {
+        if (selectedCustomFile != null) {
             try {
-                String filePath = fileManager.getFilePath(selectedFile.getName() + "." + selectedFile.getExtension());
+                String filePath = fileManager.getFilePath(selectedCustomFile.getName() + "." + selectedCustomFile.getExtension());
                 // Open the file using the default system application
                 Desktop.getDesktop().open(new java.io.File(filePath));  
             } catch (IOException e) {
@@ -69,9 +69,9 @@ public class FileExplorerMain {
 
     // Delete the selected file when button is clicked
     public void deleteFile() {
-        if (selectedFile != null) {
+        if (selectedCustomFile != null) {
             try {
-                fileManager.deleteFile(selectedFile.getName(), selectedFile.getExtension());
+                fileManager.deleteFile(selectedCustomFile.getName(), selectedCustomFile.getExtension());
                 // Update GUI to reflect the deletion
             } catch (ListEmptyException e) {
                 e.printStackTrace();
@@ -93,8 +93,8 @@ public class FileExplorerMain {
 
     // Rename the selected file (takes the new name and extension from the GUI)
     public void renameFile(String newFileName, String newExtension) {
-        if (selectedFile != null) {
-            fileManager.renameFile(selectedFile.getName(), selectedFile.getExtension(), newFileName, newExtension);
+        if (selectedCustomFile != null) {
+            fileManager.renameFile(selectedCustomFile.getName(), selectedCustomFile.getExtension(), newFileName, newExtension);
             // Update GUI to reflect the renaming
         }
     }
@@ -109,11 +109,11 @@ public class FileExplorerMain {
 
     // Move the selected file to a target folder
     public void moveFile(Folder targetFolder) {
-        if (selectedFile != null) {
+        if (selectedCustomFile != null) {
             try {
-                fileManager.deleteFile(selectedFile.getName(), selectedFile.getExtension());
+                fileManager.deleteFile(selectedCustomFile.getName(), selectedCustomFile.getExtension());
                 fileManager.navigateToFolder(targetFolder.getName());
-                fileManager.createFile(selectedFile.getName(), selectedFile.getExtension(), selectedFile.getSize());
+                fileManager.createFile(selectedCustomFile.getName(), selectedCustomFile.getExtension(), selectedCustomFile.getSize());
                 fileManager.navigateBack();
                 // Update GUI to reflect the move
             } catch (ListEmptyException e) {
@@ -148,7 +148,7 @@ public class FileExplorerMain {
     }
 
     // Trigger the GUI to show folder-related buttons
-    private void showFileActions(File file) {
+    private void showFileActions(CustomFile customFile) {
         // show buttons to delete, open, etc.
     }
 
