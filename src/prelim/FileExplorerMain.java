@@ -12,28 +12,10 @@ import java.util.Scanner;
  * */
 public class FileExplorerMain {
     private static FileManager fileManager;
-    private static void displayMenu() {
-        System.out.println("\nCurrent Directory: " + currentDirectory.getFullPath());
-        System.out.println("""
-        ================== File Explorer ==================
-        (1) Display Folders in Current Directory
-        (2) Display Files in Current Directory
-        (3) Add a Folder in Current Directory
-        (4) Add a Text File in Current Directory
-        (5) Add a File from Existing File using File Path
-        (6) Delete Folder in Current Directory
-        (7) Delete File in Current Directory
-        (8) Modify Folder in Current Directory
-        (9) Modify File in Current Directory
-        (10) Open a File
-        (11) Open a Folder
-        (12) Go Previous Directory
-        (13) Exit Program
-        ===================================================
-        """);
-        System.out.print("Choose an option (1-13): ");
-    }
     private static Folder currentDirectory;
+
+
+
     /**
      * TODO
      * */
@@ -46,6 +28,8 @@ public class FileExplorerMain {
         }
         System.exit(0);
     }
+
+
     /**
      * TODO
      * */
@@ -54,81 +38,70 @@ public class FileExplorerMain {
         fileManager = new FileManager(); // Initialize FileManager to create default folders
         currentDirectory = fileManager.getRootFolder(); // Set the current directory to root initially
         while (true) {
-            // Call displayMenu to show the file explorer menu
-            displayMenu();
-            System.out.print("Choose an option (1-13): ");
-            int choice = 0;
-            switch (validateInput(choice)) {
+            showMenu();
+            int choice = getChoiceWithValidation();
+
+            switch (choice) {
                 case 1 -> displayFoldersInCurrentDirectory();
                 case 2 -> displayFilesInCurrentDirectory();
-                case 3 -> {
-                    System.out.print("Enter new folder name: ");
-                    String newFolderName = scanner.nextLine();
-                    addNewFolder(newFolderName);
-                }
-                case 4 -> addNewFileToCurrentDirectory(); // Changed to the new method
-                case 5 -> {
-                    // TODO: Add a file from an existing file using file path
-                    break;
-                }
-                case 6 -> {
-                    System.out.print("Enter folder name to delete: ");
-                    String folderToDelete = scanner.nextLine();
-                    deleteFolderInCurrentDirectory(folderToDelete);
-                }
-                case 7 -> {
-                    System.out.print("Enter file name to delete: ");
-                    String fileToDelete = scanner.nextLine();
-                    deleteFileInCurrentDirectory(fileToDelete);
-                }
-                case 8 -> {
-                    System.out.print("Enter folder name to modify: ");
-                    String folderToModify = scanner.nextLine();
-                    modifyFolderInCurrentDirectory(folderToModify);
-                }
-                case 9 -> {
-                    System.out.print("Enter file name to modify: ");
-                    String fileToModify = scanner.nextLine();
-                    modifyFileInCurrentDirectory(fileToModify);
-                }
-                case 10 -> {
-                    System.out.println("Enter file name to open: ");
-                    String fileToOpen = scanner.nextLine();
-                    openFile(fileToOpen);
-                }
-                case 11 -> {
-                    System.out.print("Enter folder name to open: ");
-                    String folderToOpen = scanner.nextLine();
-                    openFolder(folderToOpen);
-                }
+                case 3 -> addNewFolder();
+                case 4 -> addNewFileToCurrentDirectory(); // Assumes this method is already defined
+                case 5 -> addFileFromExistingPath();
+                case 6 -> deleteFileInCurrentDirectory();
+                case 7 -> deleteFolderInCurrentDirectory();
+                case 8 -> modifyFileInCurrentDirectory();
+                case 9 -> modifyFolderInCurrentDirectory();
+                case 10 -> openFile();
+                case 11 -> openFolder();
                 case 12 -> goToPreviousDirectory();
-                case 13 -> {
-                    System.out.println("Exiting... Goodbye!");
-                    scanner.close();
-                    return;
-                }
+                case 13 -> System.exit(0);
                 default -> System.out.println("Invalid option. Please choose a valid number (1-11).");
             }
         }
     }
+
+    private void showMenu() {
+        System.out.printf("""
+                ╔═══════════════════════════════════════╗
+                ║           File Explorer               ║
+                ╠═══════════════════════════════════════╣
+                Current Directory: %s
+                ╚═══════════════════════════════════════╝
+                ┌───────────────────────────────────────┐
+                │ 1. View Folders in Current Directory  │
+                │ 2. View Files in Current Directory    │
+                │ 3. Create a New Folder                │
+                │ 4. Create a New Text File             │
+                │ 5. Import a File from Existing Path   │
+                │ 6. Remove a Folder                    │
+                │ 7. Remove a File                      │
+                │ 8. Rename a Folder                    │
+                │ 9. Edit a File                        │
+                │ 10. Open a File                       │
+                │ 11. Open a Folder                     │
+                │ 12. Navigate to Previous Directory    │
+                │ 13. Exit Program                      │
+                └───────────────────────────────────────┘
+                %n""", currentDirectory.getFullPath());
+    }
+
     /**
      * Validates the input if it satisfies the conditions if the user picked a number within the range of 1-13.
-     *
-     * @param choice User's input.
      * */
-    private static int validateInput(int choice){
+    private int getChoiceWithValidation(){
+        int choice = 0;
         Scanner scanner = new Scanner(System.in);
         boolean validInput = false;
+
         while (!validInput) {
             System.out.print("Choose an option (1-13): ");
             try {
                 choice = scanner.nextInt();
                 scanner.nextLine(); // Consume the newline character
-                if (choice < 1 || choice > 13) {
+                if (choice < 1 || choice > 13)
                     System.out.println("Invalid option. Please choose a valid number (1-12).");
-                } else {
+                else
                     validInput = true; // Exit loop if input is valid
-                }
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a number between 1 and 12.");
                 scanner.nextLine(); // Clear the invalid input
@@ -136,6 +109,8 @@ public class FileExplorerMain {
         }
         return choice;
     }
+
+
     /**
      * TODO
      * */
@@ -150,6 +125,8 @@ public class FileExplorerMain {
             }
         }
     }
+
+
     /**
      * TODO
      * */
@@ -164,11 +141,14 @@ public class FileExplorerMain {
             }
         }
     }
+
+
     /**
      * TODO
      * */
-    private static void addNewFolder(String folderName) {
+    private static void addNewFolder() {
         try {
+            String folderName = readString("Enter new folder name: ");
             Folder newFolder = new Folder(folderName);
             currentDirectory.addSubfolder(newFolder);
             System.out.println("New folder added: " + folderName);
@@ -176,6 +156,8 @@ public class FileExplorerMain {
             System.out.println("Error adding folder: " + e.getMessage());
         }
     }
+
+
     /**
      * TODO
      * */
@@ -184,7 +166,7 @@ public class FileExplorerMain {
         String[] acceptedFormats = {".txt", ".csv", ".json", ".xml", ".md"};
         while (true) {
             String fileName = askForFileName(scanner);
-            String extension = askForFileExtention(scanner, acceptedFormats);
+            String extension = askForFileExtension(scanner, acceptedFormats);
             String content = askForFileContent(scanner);
             // Check if the extension is valid
             if (extension == null) {
@@ -208,6 +190,23 @@ public class FileExplorerMain {
             }
         }
     }
+
+    private static void addFileFromExistingPath() {
+        try {
+            String filePath = readString("Enter file path of the file in your desktop: " );
+            // Create an instance of CustomFile using the provided file path
+            CustomFile newFile = new CustomFile(filePath);
+
+            // Add the file to the current directory
+            currentDirectory.addFile(newFile);
+            System.out.println("Successfully added file: " + newFile.getFileName() + newFile.getExtension());
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+
+
     /**
      * TODO
      * */
@@ -220,6 +219,8 @@ public class FileExplorerMain {
         }
         return false;
     }
+
+
     /**
      * TODO
      * */
@@ -229,6 +230,8 @@ public class FileExplorerMain {
         String response = scanner.nextLine();
         return response.equalsIgnoreCase("exit");
     }
+
+
     /**
      * TODO
      * */
@@ -238,10 +241,12 @@ public class FileExplorerMain {
         currentDirectory.addFile(newFile);
         System.out.println("File added: " + newFile.getFileName() + newFile.getExtension() + " to " + currentDirectory.getFolderName());
     }
+
+
     /**
      * TODO
      * */
-    private static String askForFileExtention(Scanner scanner, String[] acceptedFormats) {
+    private static String askForFileExtension(Scanner scanner, String[] acceptedFormats) {
         System.out.println("Available formats: " + String.join(", ", acceptedFormats));
         System.out.print("Enter file extension <include '.'>: ");
         String extension = scanner.nextLine().trim();
@@ -253,6 +258,8 @@ public class FileExplorerMain {
         System.out.println("Invalid file extension. Please enter a valid text format or type 'exit' to quit.");
         return null;
     }
+
+
     /**
      * TODO
      * */
@@ -260,6 +267,8 @@ public class FileExplorerMain {
         System.out.print("Enter file content: ");
         return scanner.nextLine();
     }
+
+
     /**
      * TODO
      * */
@@ -267,11 +276,14 @@ public class FileExplorerMain {
         System.out.print("Enter file name (without extension): ");
         return scanner.nextLine();
     }
+
+
     /**
      * TODO
      * */
-    private static void deleteFolderInCurrentDirectory(String folderName) {
+    private static void deleteFolderInCurrentDirectory() {
         try {
+            String folderName = readString("Enter folder name to delete: ");
             Folder folder = currentDirectory.getSubfolders().stream()
                     .filter(f -> f.getFolderName().equalsIgnoreCase(folderName))
                     .findFirst()
@@ -286,11 +298,14 @@ public class FileExplorerMain {
             System.out.println("Error deleting folder: " + e.getMessage());
         }
     }
+
+
     /**
      * TODO
      * */
-    private static void deleteFileInCurrentDirectory(String fileName) {
+    private static void deleteFileInCurrentDirectory() {
         try {
+            String fileName = promptFileName();
             CustomFile file = currentDirectory.getFiles().stream()
                     .filter(f -> f.getFileName().equalsIgnoreCase(fileName))
                     .findFirst()
@@ -306,11 +321,20 @@ public class FileExplorerMain {
             System.out.println("Error deleting file: " + e.getMessage());
         }
     }
+
+    private static String readString(String message) {
+        System.out.print(message);
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
+    }
+
+
     /**
      * TODO
      * */
-    private static void modifyFolderInCurrentDirectory(String folderName) {
+    private static void modifyFolderInCurrentDirectory() {
         try {
+            String folderName = readString("Enter folder name to modify: ");
             Folder folder = currentDirectory.getSubfolders().stream()
                     .filter(f -> f.getFolderName().equalsIgnoreCase(folderName))
                     .findFirst()
@@ -329,11 +353,14 @@ public class FileExplorerMain {
             System.out.println("Error modifying folder: " + e.getMessage());
         }
     }
+
+
     /**
      * TODO
      * */
-    private static void modifyFileInCurrentDirectory(String fileName) {
+    private static void modifyFileInCurrentDirectory() {
         try {
+            String fileName = promptFileName();
             CustomFile file = currentDirectory.getFiles().stream()
                     .filter(f -> f.getFileName().equalsIgnoreCase(fileName))
                     .findFirst()
@@ -352,10 +379,13 @@ public class FileExplorerMain {
             System.out.println("Error modifying file: " + e.getMessage());
         }
     }
+
+
     /**
      * TODO
      * */
-    private static void openFile(String fileName) {
+    private static void openFile() {
+        String fileName = promptFileName();
         // Search for the file in the current directory
         CustomFile file = findFileInDirectory(fileName);
         // Checks if such file exists, display error message and return if not
@@ -370,28 +400,13 @@ public class FileExplorerMain {
             // Displays the file in console if the file was created by the user
             displayFileContent(file);
         }
-        /* Old code
-        CustomFile file = currentDirectory.getFiles().stream()
-                .filter(f -> f.getFileName().equalsIgnoreCase(fileName))
-                .findFirst()
-                .orElse(null);
-
-        if (file != null) {
-            // Display the file attributes
-            System.out.println("Filename: " + file.getFileName());
-            System.out.println("Extension: " + file.getExtension());
-            System.out.println("Size: " + file.getSize() + " bytes");
-            System.out.println("Creation Date: " + file.getCreationDate());
-            System.out.println("Last Modified: " + file.getLastModifiedDate());
-            System.out.println("=== File Content ===");
-            System.out.println(file.getContent()); // Display the content of the file
-        } else {
-            System.out.println("File not found: " + fileName);
->>>>>>> src/prelim/FileExplorerMain.java
-        }
-        System.out.println("File not found in the current directory.");
-         */
     }
+
+    private static String promptFileName() {
+        return readString("Enter file name: ");
+    }
+
+
     /**
      * TODO
      * */
@@ -403,6 +418,8 @@ public class FileExplorerMain {
         }
         return null;
     }
+
+
     /**
      * TODO
      * */
@@ -416,6 +433,8 @@ public class FileExplorerMain {
             System.out.println("Error opening the file: " + e.getMessage());
         }
     }
+
+
     /**
      * TODO
      * */
@@ -428,10 +447,13 @@ public class FileExplorerMain {
         System.out.println("=== File ===");
         System.out.println(file.getContent());
     }
+
+
     /**
      * TODO
      * */
-    private static void openFolder(String folderName) {
+    private static void openFolder() {
+        String folderName = readString("Enter folder name to open: ");
         Folder selectedFolder = currentDirectory.getSubfolders().stream()
                 .filter(folder -> folder.getFolderName().equalsIgnoreCase(folderName))
                 .findFirst()
@@ -443,6 +465,8 @@ public class FileExplorerMain {
             System.out.println("Folder not found: " + folderName);
         }
     }
+
+
     /**
      * TODO
      * */
@@ -454,4 +478,6 @@ public class FileExplorerMain {
             System.out.println("You are already in the root directory.");
         }
     }
+
+
 }
