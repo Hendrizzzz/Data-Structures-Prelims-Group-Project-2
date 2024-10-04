@@ -52,24 +52,7 @@ public class FileExplorerMain {
         """);
             System.out.print("Choose an option (1-13): ");
             int choice = 0;
-            boolean validInput = false; // Flag to check if input is valid
-            // Loop to ensure valid input for the menu choice
-            while (!validInput) {
-                System.out.print("Choose an option (1-13): ");
-                try {
-                    choice = scanner.nextInt();
-                    scanner.nextLine(); // Consume the newline character
-                    if (choice < 1 || choice > 13) {
-                        System.out.println("Invalid option. Please choose a valid number (1-12).");
-                    } else {
-                        validInput = true; // Exit loop if input is valid
-                    }
-                } catch (InputMismatchException e) {
-                    System.out.println("Invalid input. Please enter a number between 1 and 12.");
-                    scanner.nextLine(); // Clear the invalid input
-                }
-            }
-            switch (choice) {
+            switch (validateInput(choice)) {
                 case 1:
                     displayFoldersInCurrentDirectory();
                     break;
@@ -85,48 +68,74 @@ public class FileExplorerMain {
                     addNewFileToCurrentDirectory(); // Changed to the new method
                     break;
                 case 5:
+                    // TODO: Add a file from an existing file using file path
+                    break;
+                case 6:
                     System.out.print("Enter folder name to delete: ");
                     String folderToDelete = scanner.nextLine();
                     deleteFolderInCurrentDirectory(folderToDelete);
                     break;
-                case 6:
+                case 7:
                     System.out.print("Enter file name to delete: ");
                     String fileToDelete = scanner.nextLine();
                     deleteFileInCurrentDirectory(fileToDelete);
                     break;
-                case 7:
+                case 8:
                     System.out.print("Enter folder name to modify: ");
                     String folderToModify = scanner.nextLine();
                     modifyFolderInCurrentDirectory(folderToModify);
                     break;
-                case 8:
+                case 9:
                     System.out.print("Enter file name to modify: ");
                     String fileToModify = scanner.nextLine();
                     modifyFileInCurrentDirectory(fileToModify);
                     break;
-                case 9:
+                case 10:
                     System.out.println("Enter file name to open: ");
                     String fileToOpen = scanner.nextLine();
                     openFile(fileToOpen);
                     break;
-                case 10:
+                case 11:
                     System.out.print("Enter folder name to open: ");
                     String folderToOpen = scanner.nextLine();
                     openFolder(folderToOpen);
                     break;
-                case 11:
+                case 12:
                     goToPreviousDirectory();
                     break;
-                case 12:
+                case 13:
                     System.out.println("Exiting... Goodbye!");
                     scanner.close();
                     return;
-                case 13:
-                    break;
                 default:
                     System.out.println("Invalid option. Please choose a valid number (1-11).");
             }
         }
+    }
+    /**
+     * Validates the input if it satisfies the conditions if the user picked a number within the range of 1-13.
+     *
+     * @param choice User's input.
+     * */
+    private static int validateInput(int choice){
+        Scanner scanner = new Scanner(System.in);
+        boolean validInput = false;
+        while (!validInput) {
+            System.out.print("Choose an option (1-13): ");
+            try {
+                choice = scanner.nextInt();
+                scanner.nextLine(); // Consume the newline character
+                if (choice < 1 || choice > 13) {
+                    System.out.println("Invalid option. Please choose a valid number (1-12).");
+                } else {
+                    validInput = true; // Exit loop if input is valid
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number between 1 and 12.");
+                scanner.nextLine(); // Clear the invalid input
+            }
+        }
+        return choice;
     }
     /**
      * TODO
