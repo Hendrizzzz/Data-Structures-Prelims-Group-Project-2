@@ -188,12 +188,12 @@ public class CustomFile implements Comparable<CustomFile> {
         return desktopPath;
     }
     /**
-     * Compares two {@code CustomFiles}
-     * @return 1 if the {@code CustomFile} is greater than the other {@code CustomFile}
+     * Compares two {@code CustomFiles} based on their names
+     * @return 1 if the {@code CustomFile} is higher in order than the other {@code CustomFile}
      * <p>
-     * -1 {@code CustomFile} if the {@code CustomFile} is lesser than the other {@code CustomFile}
+     * -1 {@code CustomFile} if the {@code CustomFile} is lower in order than the other {@code CustomFile}
      * <p>
-     * 0 if both{@code CustomFiles} are equals.
+     * 0 if both{@code CustomFiles} are the same.
      * */
     @Override
     public int compareTo(CustomFile otherFile) {
