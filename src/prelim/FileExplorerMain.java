@@ -1,7 +1,7 @@
 package prelim;
 
 import java.awt.Desktop;
-import java.io.File as JavaFile;
+import java.io.File;
 import java.io.IOException;
 
 public class FileExplorerMain {
@@ -27,11 +27,11 @@ public class FileExplorerMain {
         showFolderActions(folder);
     }
 
-    // Open the selected file in its default application when button is clicked
+    // Open the selected file in its default application
     public void openFile() {
         if (selectedFile != null) {
             try {
-                JavaFile actualFile = new JavaFile(fileManager.getFilePath(selectedFile.getName() + "." + selectedFile.getExtension()));
+                File actualFile = new File(fileManager.getFilePath(selectedFile.getName() + "." + selectedFile.getExtension()));
                 if (actualFile.exists() && Desktop.isDesktopSupported()) {
                     Desktop.getDesktop().open(actualFile);  // Opens the file using the default system application
                 }
