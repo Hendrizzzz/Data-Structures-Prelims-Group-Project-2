@@ -164,52 +164,84 @@ public class FileExplorerMain {
     private static void addNewFileToCurrentDirectory() {
         Scanner scanner = new Scanner(System.in);
         String[] acceptedFormats = {".txt", ".csv", ".json", ".xml", ".md"};
-        String fileName;
-        String content;
 
         while (true) {
-            System.out.print("Enter file name (without extension): ");
-            fileName = scanner.nextLine();
-
-            System.out.print("Enter file content: ");
-            content = scanner.nextLine();
-
-            System.out.println("Available formats: " + String.join(", ", acceptedFormats));
-            System.out.print("Enter file extension: ");
-            String extension = scanner.nextLine().trim();
+            String fileName = askForFileName(scanner);
+            String extension = askForFileExtention(scanner, acceptedFormats);
+            String content = askForFileContent(scanner);
 
             // Check if the extension is valid
-            boolean isValidExtension = false;
-            for (String format : acceptedFormats) {
-                if (format.equalsIgnoreCase(extension)) {
-                    isValidExtension = true;
+            if (extension == null) {
+                if (askToExit(scanner))
                     break;
-                }
+                continue;
             }
 
-            // If extension is valid, create the file
-            if (isValidExtension) {
-                try {
-                    // Creating file with the full name (fileName + extension)
-                    CustomFile newFile = new CustomFile(fileName, extension, content);
-                    currentDirectory.addFile(newFile);
-                    System.out.println("File added: " + newFile.getFileName() + newFile.getExtension() + " to " + currentDirectory.getFolderName());
-                    break; // Exit the loop after successful addition
-                } catch (IOException e) {
-                    System.out.println("Error adding file: " + e.getMessage());
-                } catch (ListOverflowException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                System.out.println("Invalid file extension. Please enter a valid text format or type 'exit' to quit.");
-                // Provide an option to exit
-                System.out.print("Type 'exit' to quit or press Enter to try again: ");
-                String response = scanner.nextLine();
-                if (response.equalsIgnoreCase("exit")) {
-                    break; // Exit the loop if user types 'exit'
-                }
+            // Check if a same file name already exists in the directory
+            if (fileAlreadyInDirectory(fileName, extension)) {
+                System.out.println("A file named " + fileName + extension + " already exists in the directory.");
+                if (askToExit(scanner)) break;
+                continue;
+            }
+
+            try {
+                createFileToDirectory(fileName, content, extension);
+                break; // Exit loop after successful addition
+            } catch (IOException e) {
+                System.out.println("Error adding file: " + e.getMessage());
+            } catch (ListOverflowException e) {
+                throw new RuntimeException(e);
             }
         }
+    }
+
+    private static boolean fileAlreadyInDirectory(String fileName, String extension) {
+        // Checks all the files in the directory if it has the same file name with the file being created
+        for (CustomFile file: currentDirectory.getFiles()) {
+            if (file.getFileName().equalsIgnoreCase(fileName) && file.getExtension().equalsIgnoreCase(extension)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean askToExit(Scanner scanner) {
+        // Provide an option to exit
+        System.out.print("Type 'exit' to quit or press Enter to try again: ");
+        String response = scanner.nextLine();
+        return response.equalsIgnoreCase("exit");
+    }
+
+    private static void createFileToDirectory(String fileName, String content, String extension) throws IOException, ListOverflowException {
+        // Creating file with the full name (fileName + extension)
+        CustomFile newFile = new CustomFile(fileName, extension, content);
+        currentDirectory.addFile(newFile);
+        System.out.println("File added: " + newFile.getFileName() + newFile.getExtension() + " to " + currentDirectory.getFolderName());
+    }
+
+    private static String askForFileExtention(Scanner scanner, String[] acceptedFormats) {
+        System.out.println("Available formats: " + String.join(", ", acceptedFormats));
+        System.out.print("Enter file extension <include '.'>: ");
+        String extension = scanner.nextLine().trim();
+
+        for (String format: acceptedFormats) {
+            if (format.equalsIgnoreCase(extension)) {
+                return extension;
+            }
+        }
+
+        System.out.println("Invalid file extension. Please enter a valid text format or type 'exit' to quit.");
+        return null;
+    }
+
+    private static String askForFileContent(Scanner scanner) {
+        System.out.print("Enter file content: ");
+        return scanner.nextLine();
+    }
+
+    private static String askForFileName(Scanner scanner) {
+        System.out.print("Enter file name (without extension): ");
+        return scanner.nextLine();
     }
 
     private static void deleteFolderInCurrentDirectory(String folderName) {
@@ -350,7 +382,7 @@ public class FileExplorerMain {
         }
     }
 
-    public static void displayFileContent(CustomFile file) {
+    private static void displayFileContent(CustomFile file) {
         System.out.println("Filename: " + file.getFileName());
         System.out.println("Extension: " + file.getExtension());
         System.out.println("Size: " + file.getSize() + " bytes");
