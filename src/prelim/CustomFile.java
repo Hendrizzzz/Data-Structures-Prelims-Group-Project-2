@@ -17,32 +17,38 @@ public class CustomFile implements Comparable<CustomFile> {
     private boolean isExistingFile; // New field to indicate if the file is existing
     private String desktopPath;
 
-    // Constructor to create a CustomFile from an existing file
+    /**
+     * Constructor that creates a {@code CustomFile} from an existing file.
+     *
+     * @param filePath The specified existing file.
+     * */
     public CustomFile(String filePath) throws Exception {
         File file = new File(filePath);
         if (!file.exists() || !file.isFile()) {
             throw new IllegalArgumentException("Invalid file: " + filePath);
         }
-
         this.fileName = file.getName();
         this.extension = getFileExtension(file);
         this.size = file.length();
         this.content = new String(Files.readAllBytes(file.toPath())); // Read file content
         this.desktopPath = filePath;
 
-
         BasicFileAttributes attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
         this.creationDate = new Date(attrs.creationTime().toMillis());
         this.lastModifiedDate = new Date(file.lastModified());
         this.isExistingFile = true; // Mark as an existing file
     }
-
-    // New constructor for creating a CustomFile with filename, extension, and content
+    /**
+     * Constructor for creating a {@code CustomFile} with the fields:
+     *
+     * @param fileName The name of the file.
+     * @param extension The extension of the file.
+     * @param content The content within the file.
+     * */
     public CustomFile(String fileName, String extension, String content) throws IOException {
         this.fileName = fileName;
         this.extension = extension;
         this.content = content;
-
         // Create the file and write content
         File file = new File(fileName + extension);
         try (FileWriter writer = new FileWriter(file)) {
@@ -51,26 +57,30 @@ public class CustomFile implements Comparable<CustomFile> {
         } catch (IOException e) {
             throw new IOException("Error creating file: " + e.getMessage());
         }
-
         // Set creation and last modified dates
         this.creationDate = new Date(); // Set current date as creation date
         this.lastModifiedDate = this.creationDate; // Last modified is also current date
         this.isExistingFile = false; // Mark as not an existing file
     }
-
-    // New method to check if the file is an existing file
+    /**
+     * Method used to check if the file is an existing {@code CustomFile}.
+     * @return True if the {@code CustomFile} exists/ False if not.
+     * */
     public boolean isExistingFile() {
         return isExistingFile;
     }
-
-    // Method to get the file extension
+    /**
+     * @return The file extension of a specified {@code File}
+     * */
     private String getFileExtension(File file) {
         String name = file.getName();
         int lastDot = name.lastIndexOf('.');
         return (lastDot == -1) ? "" : name.substring(lastDot); // Return dot + extension
     }
-
-    // Method to delete the file
+    /**
+     * Method that removes a {@code File}.
+     * @return True if the file was deleted/ False if not.
+     * */
     public boolean deleteFile() {
         File file = new File(fileName + extension);
         boolean deleted = file.delete();
@@ -82,56 +92,112 @@ public class CustomFile implements Comparable<CustomFile> {
             return false;
         }
     }
-
-    // Getter and Setter methods
-    public String getFileName() {
-        return fileName;
-    }
-
+    /**
+     * Sets the name of the {@code CustomFile}.
+     * */
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-
-    public String getExtension() {
-        return extension;
-    }
-
+    /**
+     * Sets the extension of the {@code CustomFile}.
+     * */
     public void setExtension(String extension) {
         this.extension = extension;
     }
-
-    public long getSize() {
-        return size;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
+    /**
+     * Sets the content of the {@code CustomFile}.
+     * */
     public void setContent(String content) {
         this.content = content;
         this.lastModifiedDate = new Date(); // Update last modified date
     }
-
+    /**
+     * Sets the size of the {@code CustomFile}.
+     * */
+    public void setSize(long size) {
+        this.size = size;
+    }
+    /**
+     * Sets the creation date of the {@code CustomFile}.
+     * */
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+    /**
+     * Sets the date of the last modification done to a {@code CustomFile}.
+     * */
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+    /**
+     * Sets if the {@code CustomFile} is existing or not.
+     * */
+    public void setExistingFile(boolean existingFile) {
+        isExistingFile = existingFile;
+    }
+    /**
+     * Sets the path of the {@code CustomFile}/
+     * */
+    public void setDesktopPath(String desktopPath) {
+        this.desktopPath = desktopPath;
+    }
+    /**
+     * @return The name of a {@code CustomFile}.
+     * */
+    public String getFileName() {
+        return fileName;
+    }
+    /**
+     * @return The extension of a {@code CustomFile}.
+     * */
+    public String getExtension() {
+        return extension;
+    }
+    /**
+     * @return The size of a {@code CustomFile}.
+     * */
+    public long getSize() {
+        return size;
+    }
+    /**
+     * @return The creation date of a {@code CustomFile}.
+     * */
+    public Date getCreationDate() {
+        return creationDate;
+    }
+    /**
+     * @return The date of the last modification to a {@code CustomFile}.
+     * */
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+    /**
+     * @return The content of a {@code CustomFile}.
+     * */
+    public String getContent() {
+        return content;
+    }
+    /**
+     * @return The path of a {@code CustomFile}.
+     * */
     public String getDesktopPath() {
         return desktopPath;
     }
-
-    // compareTo method (compare by file name)
+    /**
+     * Compares two {@code CustomFiles}
+     * @return 1 if the {@code CustomFile} is greater than the other {@code CustomFile}
+     * <p>
+     * -1 {@code CustomFile} if the {@code CustomFile} is lesser than the other {@code CustomFile}
+     * <p>
+     * 0 if both{@code CustomFiles} are equals.
+     * */
     @Override
     public int compareTo(CustomFile otherFile) {
         return this.fileName.compareTo(otherFile.fileName);
     }
-
-    // toString for displaying file info
+    /**
+     * @return A string representation of a CustomFile.
+     * */
     @Override
     public String toString() {
         return "CustomFile{" +
