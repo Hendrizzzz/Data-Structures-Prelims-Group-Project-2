@@ -13,7 +13,9 @@ import java.util.Scanner;
 public class FileExplorerMain {
     private static FileManager fileManager;
     private static Folder currentDirectory;
-
+    /**
+     * TODO
+     * */
     public static void main(String[] args) {
         FileExplorerMain app = new FileExplorerMain();
         try {
@@ -23,12 +25,13 @@ public class FileExplorerMain {
         }
         System.exit(0);
     }
-
+    /**
+     * TODO
+     * */
     public void run() throws ListOverflowException {
         Scanner scanner = new Scanner(System.in);
         fileManager = new FileManager(); // Initialize FileManager to create default folders
         currentDirectory = fileManager.getRootFolder(); // Set the current directory to root initially
-
         while (true) {
             System.out.println("\nCurrent Directory: " + currentDirectory.getFullPath());
             System.out.println("=== File Explorer ===");
@@ -46,10 +49,8 @@ public class FileExplorerMain {
             System.out.println("12. Go Previous Directory");
             System.out.println("13. Exit Program");
             System.out.print("Choose an option (1-13): ");
-
             int choice = 0;
             boolean validInput = false; // Flag to check if input is valid
-
             // Loop to ensure valid input for the menu choice
             while (!validInput) {
                 System.out.print("Choose an option (1-13): ");
@@ -66,7 +67,6 @@ public class FileExplorerMain {
                     scanner.nextLine(); // Clear the invalid input
                 }
             }
-
             switch (choice) {
                 case 1:
                     displayFoldersInCurrentDirectory();
@@ -126,7 +126,9 @@ public class FileExplorerMain {
             }
         }
     }
-
+    /**
+     * TODO
+     * */
     private static void displayFoldersInCurrentDirectory() {
         List<Folder> subfolders = currentDirectory.getSubfolders();
         if (subfolders.isEmpty()) {
@@ -138,7 +140,9 @@ public class FileExplorerMain {
             }
         }
     }
-
+    /**
+     * TODO
+     * */
     private static void displayFilesInCurrentDirectory() {
         List<CustomFile> files = currentDirectory.getFiles();
         if (files.isEmpty()) {
@@ -150,7 +154,9 @@ public class FileExplorerMain {
             }
         }
     }
-
+    /**
+     * TODO
+     * */
     private static void addNewFolder(String folderName) {
         try {
             Folder newFolder = new Folder(folderName);
@@ -160,30 +166,28 @@ public class FileExplorerMain {
             System.out.println("Error adding folder: " + e.getMessage());
         }
     }
-
+    /**
+     * TODO
+     * */
     private static void addNewFileToCurrentDirectory() {
         Scanner scanner = new Scanner(System.in);
         String[] acceptedFormats = {".txt", ".csv", ".json", ".xml", ".md"};
-
         while (true) {
             String fileName = askForFileName(scanner);
             String extension = askForFileExtention(scanner, acceptedFormats);
             String content = askForFileContent(scanner);
-
             // Check if the extension is valid
             if (extension == null) {
                 if (askToExit(scanner))
                     break;
                 continue;
             }
-
             // Check if a same file name already exists in the directory
             if (fileAlreadyInDirectory(fileName, extension)) {
                 System.out.println("A file named " + fileName + extension + " already exists in the directory.");
                 if (askToExit(scanner)) break;
                 continue;
             }
-
             try {
                 createFileToDirectory(fileName, content, extension);
                 break; // Exit loop after successful addition
@@ -194,7 +198,9 @@ public class FileExplorerMain {
             }
         }
     }
-
+    /**
+     * TODO
+     * */
     private static boolean fileAlreadyInDirectory(String fileName, String extension) {
         // Checks all the files in the directory if it has the same file name with the file being created
         for (CustomFile file: currentDirectory.getFiles()) {
@@ -204,46 +210,56 @@ public class FileExplorerMain {
         }
         return false;
     }
-
+    /**
+     * TODO
+     * */
     private static boolean askToExit(Scanner scanner) {
         // Provide an option to exit
         System.out.print("Type 'exit' to quit or press Enter to try again: ");
         String response = scanner.nextLine();
         return response.equalsIgnoreCase("exit");
     }
-
+    /**
+     * TODO
+     * */
     private static void createFileToDirectory(String fileName, String content, String extension) throws IOException, ListOverflowException {
         // Creating file with the full name (fileName + extension)
         CustomFile newFile = new CustomFile(fileName, extension, content);
         currentDirectory.addFile(newFile);
         System.out.println("File added: " + newFile.getFileName() + newFile.getExtension() + " to " + currentDirectory.getFolderName());
     }
-
+    /**
+     * TODO
+     * */
     private static String askForFileExtention(Scanner scanner, String[] acceptedFormats) {
         System.out.println("Available formats: " + String.join(", ", acceptedFormats));
         System.out.print("Enter file extension <include '.'>: ");
         String extension = scanner.nextLine().trim();
-
         for (String format: acceptedFormats) {
             if (format.equalsIgnoreCase(extension)) {
                 return extension;
             }
         }
-
         System.out.println("Invalid file extension. Please enter a valid text format or type 'exit' to quit.");
         return null;
     }
-
+    /**
+     * TODO
+     * */
     private static String askForFileContent(Scanner scanner) {
         System.out.print("Enter file content: ");
         return scanner.nextLine();
     }
-
+    /**
+     * TODO
+     * */
     private static String askForFileName(Scanner scanner) {
         System.out.print("Enter file name (without extension): ");
         return scanner.nextLine();
     }
-
+    /**
+     * TODO
+     * */
     private static void deleteFolderInCurrentDirectory(String folderName) {
         try {
             Folder folder = currentDirectory.getSubfolders().stream()
@@ -260,7 +276,9 @@ public class FileExplorerMain {
             System.out.println("Error deleting folder: " + e.getMessage());
         }
     }
-
+    /**
+     * TODO
+     * */
     private static void deleteFileInCurrentDirectory(String fileName) {
         try {
             CustomFile file = currentDirectory.getFiles().stream()
@@ -278,7 +296,9 @@ public class FileExplorerMain {
             System.out.println("Error deleting file: " + e.getMessage());
         }
     }
-
+    /**
+     * TODO
+     * */
     private static void modifyFolderInCurrentDirectory(String folderName) {
         try {
             Folder folder = currentDirectory.getSubfolders().stream()
@@ -299,7 +319,9 @@ public class FileExplorerMain {
             System.out.println("Error modifying folder: " + e.getMessage());
         }
     }
-
+    /**
+     * TODO
+     * */
     private static void modifyFileInCurrentDirectory(String fileName) {
         try {
             CustomFile file = currentDirectory.getFiles().stream()
@@ -320,17 +342,17 @@ public class FileExplorerMain {
             System.out.println("Error modifying file: " + e.getMessage());
         }
     }
-
+    /**
+     * TODO
+     * */
     private static void openFile(String fileName) {
         // Search for the file in the current directory
         CustomFile file = findFileInDirectory(fileName);
-
         // Checks if such file exists, display error message and return if not
         if (file == null) {
             System.out.println("File not found: " + fileName);
             return;
         }
-
         // Opens the file with default application if it exists on the system
         if (file.isExistingFile()) {
             openExistingFile(file);
@@ -338,7 +360,6 @@ public class FileExplorerMain {
             // Displays the file in console if the file was created by the user
             displayFileContent(file);
         }
-
         /* Old code
         CustomFile file = currentDirectory.getFiles().stream()
                 .filter(f -> f.getFileName().equalsIgnoreCase(fileName))
@@ -361,7 +382,9 @@ public class FileExplorerMain {
         System.out.println("File not found in the current directory.");
          */
     }
-
+    /**
+     * TODO
+     * */
     private static CustomFile findFileInDirectory(String fileName) {
         for (CustomFile file: currentDirectory.getFiles()) {
             if (file.getFileName().equalsIgnoreCase(fileName)) {
@@ -370,7 +393,9 @@ public class FileExplorerMain {
         }
         return null;
     }
-
+    /**
+     * TODO
+     * */
     private static void openExistingFile(CustomFile file) {
         try {
             // Use Desktop class to open the file
@@ -381,7 +406,9 @@ public class FileExplorerMain {
             System.out.println("Error opening the file: " + e.getMessage());
         }
     }
-
+    /**
+     * TODO
+     * */
     private static void displayFileContent(CustomFile file) {
         System.out.println("Filename: " + file.getFileName());
         System.out.println("Extension: " + file.getExtension());
@@ -391,13 +418,14 @@ public class FileExplorerMain {
         System.out.println("=== File ===");
         System.out.println(file.getContent());
     }
-
+    /**
+     * TODO
+     * */
     private static void openFolder(String folderName) {
         Folder selectedFolder = currentDirectory.getSubfolders().stream()
                 .filter(folder -> folder.getFolderName().equalsIgnoreCase(folderName))
                 .findFirst()
                 .orElse(null);
-
         if (selectedFolder != null) {
             currentDirectory = selectedFolder; // Update the current directory to the selected folder
             System.out.println("Opened folder: " + selectedFolder.getFullPath());
@@ -405,7 +433,9 @@ public class FileExplorerMain {
             System.out.println("Folder not found: " + folderName);
         }
     }
-
+    /**
+     * TODO
+     * */
     private static void goToPreviousDirectory() {
         if (currentDirectory.getParentFolder() != null) {
             currentDirectory = currentDirectory.getParentFolder(); // Set current directory to parent folder
