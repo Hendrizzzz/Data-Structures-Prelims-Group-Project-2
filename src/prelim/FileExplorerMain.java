@@ -278,32 +278,21 @@ public class FileExplorerMain {
 
     private static void openFile(String fileName) {
         // Search for the file in the current directory
-        for (CustomFile file : currentDirectory.getFiles()) {
-            if (file.getFileName().equalsIgnoreCase(fileName)) {
-                if (file.isExistingFile()) {
-                    // If the file is an existing file, open it using the system's default application
-                    try {
-                        // Use Desktop class to open the file
-                        File f = new File(file.getDesktopPath());
-                        Desktop.getDesktop().open(f); // Open the file with default application
-                        System.out.println("Opened file: " + file.getFileName());
-                    } catch (IOException e) {
-                        System.out.println("Error opening the file: " + e.getMessage());
-                    }
-                } else {
-                    // If the file was created through user input, display its content in the console
-                    System.out.println("Filename: " + file.getFileName());
-                    System.out.println("Extension: " + file.getExtension());
-                    System.out.println("Size: " + file.getSize() + " bytes");
-                    System.out.println("Creation Date: " + file.getCreationDate());
-                    System.out.println("Last Modified: " + file.getLastModifiedDate());
-                    System.out.println("=== File ===");
-                    System.out.println(file.getContent()); // Display content
-                }
-                return; // Exit after processing the file
-            }
+        CustomFile file = findFileInDirectory(fileName);
+
+        // Checks if such file exists, display error message and return if not
+        if (file == null) {
+            System.out.println("File not found: " + fileName);
+            return;
         }
 
+        // Opens the file with default application if it exists on the system
+        if (file.isExistingFile()) {
+            openExistingFile(file);
+        } else {
+            // Displays the file in console if the file was created by the user
+            displayFileContent(file);
+        }
 
         /* Old code
         CustomFile file = currentDirectory.getFiles().stream()
@@ -326,6 +315,36 @@ public class FileExplorerMain {
         }
         System.out.println("File not found in the current directory.");
          */
+    }
+
+    private static CustomFile findFileInDirectory(String fileName) {
+        for (CustomFile file: currentDirectory.getFiles()) {
+            if (file.getFileName().equalsIgnoreCase(fileName)) {
+                return file;
+            }
+        }
+        return null;
+    }
+
+    private static void openExistingFile(CustomFile file) {
+        try {
+            // Use Desktop class to open the file
+            File f = new File(file.getDesktopPath());
+            Desktop.getDesktop().open(f); // Open the file with default application
+            System.out.println("Opened file: " + file.getFileName());
+        } catch (IOException e) {
+            System.out.println("Error opening the file: " + e.getMessage());
+        }
+    }
+
+    public static void displayFileContent(CustomFile file) {
+        System.out.println("Filename: " + file.getFileName());
+        System.out.println("Extension: " + file.getExtension());
+        System.out.println("Size: " + file.getSize() + " bytes");
+        System.out.println("Creation Date: " + file.getCreationDate());
+        System.out.println("Last Modified: " + file.getLastModifiedDate());
+        System.out.println("=== File ===");
+        System.out.println(file.getContent());
     }
 
     private static void openFolder(String folderName) {
