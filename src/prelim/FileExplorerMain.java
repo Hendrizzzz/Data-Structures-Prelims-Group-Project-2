@@ -27,14 +27,13 @@ public class FileExplorerMain {
         showFolderActions(folder);
     }
 
-    // Open the selected file in its default application
+    // Open the selected file in its default application when button is clicked
     public void openFile() {
         if (selectedFile != null) {
             try {
-                File actualFile = new File(fileManager.getFilePath(selectedFile.getName() + "." + selectedFile.getExtension()));
-                if (actualFile.exists() && Desktop.isDesktopSupported()) {
-                    Desktop.getDesktop().open(actualFile);  // Opens the file using the default system application
-                }
+                String filePath = fileManager.getFilePath(selectedFile.getName() + "." + selectedFile.getExtension());
+                // Open the file using the default system application
+                Desktop.getDesktop().open(new java.io.File(filePath));  
             } catch (IOException e) {
                 e.printStackTrace();
             }
