@@ -1,6 +1,7 @@
 package prelim;
 
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class FileExplorerMain {
@@ -27,10 +28,26 @@ public class FileExplorerMain {
             System.out.println("10. Open a Folder");
             System.out.println("11. Go Previous Directory");
             System.out.println("12. Exit Program");
-            System.out.print("Choose an option (1-12): ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character
+            int choice = 0;
+            boolean validInput = false; // Flag to check if input is valid
+
+            // Loop to ensure valid input for the menu choice
+            while (!validInput) {
+                System.out.print("Choose an option (1-12): ");
+                try {
+                    choice = scanner.nextInt();
+                    scanner.nextLine(); // Consume the newline character
+                    if (choice < 1 || choice > 12) {
+                        System.out.println("Invalid option. Please choose a valid number (1-12).");
+                    } else {
+                        validInput = true; // Exit loop if input is valid
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input. Please enter a number between 1 and 12.");
+                    scanner.nextLine(); // Clear the invalid input
+                }
+            }
 
             switch (choice) {
                 case 1:
@@ -85,7 +102,8 @@ public class FileExplorerMain {
                     scanner.close();
                     return;
                 default:
-                    System.out.println("Invalid option. Please choose a valid number (1-11).");
+                    // This default case won't be hit due to the validation above.
+                    break;
             }
         }
     }
@@ -207,8 +225,6 @@ public class FileExplorerMain {
                     .findFirst()
                     .orElse(null);
             if (folder != null) {
-                // Assuming you want to modify folder properties
-                // Example: just changing the name for simplicity
                 System.out.print("Enter new folder name: ");
                 String newFolderName = new Scanner(System.in).nextLine();
                 folder.setFolderName(newFolderName);
@@ -228,8 +244,6 @@ public class FileExplorerMain {
                     .findFirst()
                     .orElse(null);
             if (file != null) {
-                // Assuming you want to modify file properties
-                // Example: just changing the name for simplicity
                 System.out.print("Enter new file name: ");
                 String newFileName = new Scanner(System.in).nextLine();
                 file.setFileName(newFileName);
