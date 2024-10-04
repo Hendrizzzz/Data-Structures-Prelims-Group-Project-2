@@ -13,7 +13,7 @@ public class FileExplorerMain {
         currentDirectory = fileManager.getRootFolder(); // Set the current directory to root initially
 
         while (true) {
-            System.out.println("\nCurrent Directory: " + currentDirectory.getFolderName());
+            System.out.println("\nCurrent Directory: " + currentDirectory.getFullPath());
             System.out.println("=== File Explorer ===");
             System.out.println("1. Display Folders in Current Directory");
             System.out.println("2. Display Files in Current Directory");
@@ -263,13 +263,14 @@ public class FileExplorerMain {
     }
 
     private static void openFolder(String folderName) {
-        Folder folder = currentDirectory.getSubfolders().stream()
-                .filter(f -> f.getFolderName().equalsIgnoreCase(folderName))
+        Folder selectedFolder = currentDirectory.getSubfolders().stream()
+                .filter(folder -> folder.getFolderName().equalsIgnoreCase(folderName))
                 .findFirst()
                 .orElse(null);
-        if (folder != null) {
-            currentDirectory = folder; // Navigate to the new folder
-            System.out.println("Opened folder: " + folder.getFolderName());
+
+        if (selectedFolder != null) {
+            currentDirectory = selectedFolder; // Update the current directory to the selected folder
+            System.out.println("Opened folder: " + selectedFolder.getFullPath());
         } else {
             System.out.println("Folder not found: " + folderName);
         }
@@ -277,8 +278,8 @@ public class FileExplorerMain {
 
     private static void goToPreviousDirectory() {
         if (currentDirectory.getParentFolder() != null) {
-            currentDirectory = currentDirectory.getParentFolder(); // Navigate to the parent folder
-            System.out.println("Moved to previous directory: " + currentDirectory.getFolderName());
+            currentDirectory = currentDirectory.getParentFolder(); // Set current directory to parent folder
+            System.out.println("Returned to: " + currentDirectory.getFullPath());
         } else {
             System.out.println("You are already in the root directory.");
         }

@@ -59,6 +59,14 @@ public class Folder implements Comparable<Folder> {
         return parentFolder;
     }
 
+    // Method to get the full path of the folder
+    public String getFullPath() {
+        if (parentFolder == null) {
+            return folderName; // If no parent, return just the folder name
+        }
+        return parentFolder.getFullPath() + "/" + folderName; // Append folder name to parent's path
+    }
+
     @Override
     public int compareTo(Folder other) {
         return this.folderName.compareTo(other.folderName);
