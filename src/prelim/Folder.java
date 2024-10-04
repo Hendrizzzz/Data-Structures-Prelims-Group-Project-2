@@ -38,7 +38,6 @@ public class Folder implements Comparable<Folder> {
         }
     }
 
-    // CRUD Setters
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
@@ -68,3 +67,36 @@ public class Folder implements Comparable<Folder> {
         return files;
     }
 
+    public MyDoublyLinkedCircularList<Folder> getSubfolders() {
+        return subfolders;
+    }
+
+    // Add file to the folder
+    public void addFile(CustomFile file) {
+        files.add(file);
+    }
+
+    // Add a subfolder to the folder
+    public void addSubfolder(Folder subfolder) throws ListOverflowException {
+        subfolders.insert(subfolder);
+    }
+
+    // compareTo method (compare by folder name)
+    @Override
+    public int compareTo(Folder otherFolder) {
+        return this.folderName.compareTo(otherFolder.folderName);
+    }
+
+    // String representation for displaying folder info
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Folder: ").append(folderName).append("\n");
+        sb.append("Files:\n");
+        for (CustomFile file : files) {
+            sb.append(" - ").append(file.getFileName()).append("\n");
+        }
+        sb.append("Number of Subfolders: ").append(subfolders.getSize()).append("\n");
+        return sb.toString();
+    }
+}
