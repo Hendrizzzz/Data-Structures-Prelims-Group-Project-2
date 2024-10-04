@@ -24,7 +24,7 @@ public class FileExplorerMain {
         System.exit(0);
     }
 
-    private void run() throws ListOverflowException {
+    public void run() throws ListOverflowException {
         Scanner scanner = new Scanner(System.in);
         fileManager = new FileManager(); // Initialize FileManager to create default folders
         currentDirectory = fileManager.getRootFolder(); // Set the current directory to root initially
