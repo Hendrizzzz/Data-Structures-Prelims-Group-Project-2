@@ -11,7 +11,6 @@ import java.util.Scanner;
  * by utilizing a list of lists.
  * */
 public class FileExplorerMain {
-    private static FileManager fileManager;
     private static Folder currentDirectory;
 
 
@@ -35,7 +34,7 @@ public class FileExplorerMain {
      * */
     public void run() throws ListOverflowException {
         Scanner scanner = new Scanner(System.in);
-        fileManager = new FileManager(); // Initialize FileManager to create default folders
+        FileManager fileManager = new FileManager(); // Initialize FileManager to create default folders
         currentDirectory = fileManager.getRootFolder(); // Set the current directory to root initially
         while (true) {
             showMenu();
@@ -47,12 +46,12 @@ public class FileExplorerMain {
                 case 3 -> addNewFolder();
                 case 4 -> addNewFileToCurrentDirectory(); // Assumes this method is already defined
                 case 5 -> addFileFromExistingPath();
-                case 6 -> deleteFileInCurrentDirectory();
-                case 7 -> deleteFolderInCurrentDirectory();
-                case 8 -> modifyFileInCurrentDirectory();
-                case 9 -> modifyFolderInCurrentDirectory();
-                case 10 -> openFile();
-                case 11 -> openFolder();
+                case 6 -> deleteFolderInCurrentDirectory();
+                case 7 -> deleteFileInCurrentDirectory();
+                case 8 -> modifyFolderInCurrentDirectory();
+                case 9 -> modifyFileInCurrentDirectory();
+                case 10 -> openFolder();
+                case 11 -> openFile();
                 case 12 -> goToPreviousDirectory();
                 case 13 -> System.exit(0);
                 default -> System.out.println("Invalid option. Please choose a valid number (1-11).");
@@ -76,9 +75,9 @@ public class FileExplorerMain {
                 │ 6. Remove a Folder                    │
                 │ 7. Remove a File                      │
                 │ 8. Rename a Folder                    │
-                │ 9. Edit a File                        │
-                │ 10. Open a File                       │
-                │ 11. Open a Folder                     │
+                │ 9. Rename a File                      │
+                │ 10. Open a Folder                     │
+                │ 11. Open a File                       │
                 │ 12. Navigate to Previous Directory    │
                 │ 13. Exit Program                      │
                 └───────────────────────────────────────┘
@@ -194,10 +193,8 @@ public class FileExplorerMain {
     private static void addFileFromExistingPath() {
         try {
             String filePath = readString("Enter file path of the file in your desktop: " );
-            // Create an instance of CustomFile using the provided file path
             CustomFile newFile = new CustomFile(filePath);
 
-            // Add the file to the current directory
             currentDirectory.addFile(newFile);
             System.out.println("Successfully added file: " + newFile.getFileName() + newFile.getExtension());
         } catch (Exception e) {
@@ -212,10 +209,9 @@ public class FileExplorerMain {
      * */
     private static boolean fileAlreadyInDirectory(String fileName, String extension) {
         // Checks all the files in the directory if it has the same file name with the file being created
-        for (CustomFile file: currentDirectory.getFiles()) {
+        for (CustomFile file: currentDirectory.getFiles())
             if (file.getFileName().equalsIgnoreCase(fileName) && file.getExtension().equalsIgnoreCase(extension)) {
                 return true;
-            }
         }
         return false;
     }
@@ -251,9 +247,8 @@ public class FileExplorerMain {
         System.out.print("Enter file extension <include '.'>: ");
         String extension = scanner.nextLine().trim();
         for (String format: acceptedFormats) {
-            if (format.equalsIgnoreCase(extension)) {
+            if (format.equalsIgnoreCase(extension))
                 return extension;
-            }
         }
         System.out.println("Invalid file extension. Please enter a valid text format or type 'exit' to quit.");
         return null;
@@ -291,9 +286,8 @@ public class FileExplorerMain {
             if (folder != null) {
                 currentDirectory.getSubfolders().remove(folder);
                 System.out.println("Folder deleted: " + folderName);
-            } else {
+            } else
                 System.out.println("Folder not found: " + folderName);
-            }
         } catch (Exception e) {
             System.out.println("Error deleting folder: " + e.getMessage());
         }
@@ -394,12 +388,10 @@ public class FileExplorerMain {
             return;
         }
         // Opens the file with default application if it exists on the system
-        if (file.isExistingFile()) {
+        if (file.isExistingFile())
             openExistingFile(file);
-        } else {
-            // Displays the file in console if the file was created by the user
+        else
             displayFileContent(file);
-        }
     }
 
     private static String promptFileName() {
@@ -412,7 +404,7 @@ public class FileExplorerMain {
      * */
     private static CustomFile findFileInDirectory(String fileName) {
         for (CustomFile file: currentDirectory.getFiles()) {
-            if (file.getFileName().equalsIgnoreCase(fileName)) {
+            if (file.getFileName().equalsIgnoreCase(fileName) || (file.getFileName() + file.getExtension()).equalsIgnoreCase(fileName)) {
                 return file;
             }
         }
@@ -474,9 +466,8 @@ public class FileExplorerMain {
         if (currentDirectory.getParentFolder() != null) {
             currentDirectory = currentDirectory.getParentFolder(); // Set current directory to parent folder
             System.out.println("Returned to: " + currentDirectory.getFullPath());
-        } else {
+        } else
             System.out.println("You are already in the root directory.");
-        }
     }
 
 
