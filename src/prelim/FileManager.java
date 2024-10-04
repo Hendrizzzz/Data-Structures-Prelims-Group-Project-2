@@ -30,18 +30,21 @@ public class FileManager {
         return rootFolder;
     }
     /**
-     * TODO
+     * @return The default {@code Folder} for a specified folder name.
+     *
+     * @param folderName The name of the folder.
      * */
     public Folder getDefaultFolder(String folderName) {
+        Folder defaultFolder = new Folder(folderName);
         for (Folder folder : rootFolder.getSubfolders()) {
-            if (folder.getFolderName().equalsIgnoreCase(folderName)) {
+            if (folder.getFolderName().equalsIgnoreCase(defaultFolder.getFolderName())) {
                 return folder;
             }
         }
         return null; // Folder not found
     }
     /**
-     * TODO
+     * Displays the default folder and all of its subfolders.
      * */
     public void displayDefaultFolders() {
         System.out.println("Default Folders:");
