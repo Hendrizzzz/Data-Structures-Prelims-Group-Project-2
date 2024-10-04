@@ -53,62 +53,55 @@ public class FileExplorerMain {
             System.out.print("Choose an option (1-13): ");
             int choice = 0;
             switch (validateInput(choice)) {
-                case 1:
-                    displayFoldersInCurrentDirectory();
-                    break;
-                case 2:
-                    displayFilesInCurrentDirectory();
-                    break;
-                case 3:
+                case 1 -> displayFoldersInCurrentDirectory();
+                case 2 -> displayFilesInCurrentDirectory();
+                case 3 -> {
                     System.out.print("Enter new folder name: ");
                     String newFolderName = scanner.nextLine();
                     addNewFolder(newFolderName);
-                    break;
-                case 4:
-                    addNewFileToCurrentDirectory(); // Changed to the new method
-                    break;
-                case 5:
+                }
+                case 4 -> addNewFileToCurrentDirectory(); // Changed to the new method
+                case 5 -> {
                     // TODO: Add a file from an existing file using file path
                     break;
-                case 6:
+                }
+                case 6 -> {
                     System.out.print("Enter folder name to delete: ");
                     String folderToDelete = scanner.nextLine();
                     deleteFolderInCurrentDirectory(folderToDelete);
-                    break;
-                case 7:
+                }
+                case 7 -> {
                     System.out.print("Enter file name to delete: ");
                     String fileToDelete = scanner.nextLine();
                     deleteFileInCurrentDirectory(fileToDelete);
-                    break;
-                case 8:
+                }
+                case 8 -> {
                     System.out.print("Enter folder name to modify: ");
                     String folderToModify = scanner.nextLine();
                     modifyFolderInCurrentDirectory(folderToModify);
-                    break;
-                case 9:
+                }
+                case 9 -> {
                     System.out.print("Enter file name to modify: ");
                     String fileToModify = scanner.nextLine();
                     modifyFileInCurrentDirectory(fileToModify);
-                    break;
-                case 10:
+                }
+                case 10 -> {
                     System.out.println("Enter file name to open: ");
                     String fileToOpen = scanner.nextLine();
                     openFile(fileToOpen);
-                    break;
-                case 11:
+                }
+                case 11 -> {
                     System.out.print("Enter folder name to open: ");
                     String folderToOpen = scanner.nextLine();
                     openFolder(folderToOpen);
-                    break;
-                case 12:
-                    goToPreviousDirectory();
-                    break;
-                case 13:
+                }
+                case 12 -> goToPreviousDirectory();
+                case 13 -> {
                     System.out.println("Exiting... Goodbye!");
                     scanner.close();
                     return;
-                default:
-                    System.out.println("Invalid option. Please choose a valid number (1-11).");
+                }
+                default -> System.out.println("Invalid option. Please choose a valid number (1-11).");
             }
         }
     }
