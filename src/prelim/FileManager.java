@@ -1,13 +1,24 @@
 package prelim;
 
 
+import prelim.DataStructures.LinkedList;
+import prelim.DataStructures.MyGrowingArrayList;
+import prelim.Exceptions.ListEmptyException;
+import prelim.Exceptions.SpecialFolderDeletionException;
+import prelim.Objects.CustomFile;
+import prelim.Objects.FileSystemEntity;
+import prelim.Objects.Folder;
+
+import java.io.FileNotFoundException;
+import java.util.NoSuchElementException;
+
 import java.util.Date;
 
 /**
  * Class that facilitates operation; creation, deletion, etc. of files or folders
  */
-public class FileManager {
-    private String currentDirectory;
+public class FileManager implements FileManagerInterface{
+    private String currentPath;
     private LinkedList<LinkedList<FileSystemEntity>> source;
 
     LinkedList<FileSystemEntity> desktop;
@@ -19,7 +30,7 @@ public class FileManager {
 
 
     {
-        currentDirectory = "source";
+        currentPath = "source";
     }
 
 
@@ -30,8 +41,9 @@ public class FileManager {
         this(new LinkedList<LinkedList<FileSystemEntity>>());
     }
 
+
     /**
-     * Constructor with arguments, declares values on datafields
+     * Constructs the predefined root and its predefined folders such as Desktop, downloads, etc.
      * @param source the source
      */
     public FileManager(LinkedList<LinkedList<FileSystemEntity>> source) {
@@ -48,48 +60,57 @@ public class FileManager {
     /**
      * @return the String representation of the current directory
      */
-    public String getDirectory() {
-        return currentDirectory;
+    @Override
+    public String getCurrentPath() {
+        return currentPath;
     }
+
 
     /**
      * Navigates through a folder
      * @param folderName the name of the folder to navigate through
      */
+    @Override
     public void navigateToFolder(String folderName) {
-        currentDirectory = currentDirectory + "\\" + folderName;
+        currentPath = currentPath + "\\" + folderName;
     }
+
 
     /**
      * Navigates out from a folder
      */
+    @Override
     public void navigateBack() {
-        if (currentDirectory.equals("source"))
+        if (currentPath.equals("source"))
             return;
 
-        String[] path = currentDirectory.split("\\\\");
+        String[] path = currentPath.split("\\\\");
 
         StringBuilder newPath = new StringBuilder();
         for (int i = 0; i < path.length - 1; i++)  // don't include the last now
             newPath.append(path[i]);
 
-        currentDirectory = newPath.toString();
+        currentPath = newPath.toString();
     }
+
 
     /**
      * @param folderName the name of the folder to retrieve (path)
      * @return the path of the folder
      */
+    @Override
     public String getFolderPath(String folderName) {
-        return currentDirectory + "\\" + folderName;
+        return currentPath + "\\" + folderName;
     }
+
 
     /**
      * @param fileName the name of the file to retrieve (path)
      * @return the path of the file
      */
+    @Override
     public String getFilePath(String fileName) {
-        return currentDirectory + "\\" + fileName;
+        return currentPath + "\\" + fileName;
     }
 
 
@@ -97,11 +118,12 @@ public class FileManager {
      * Most used method. Call this every time it clicks a folder or goes back.
      * @return the contents of the current directory (folders, files).
      */
-    public Object getCurrentDirectoryContents() {
-        if (this.currentDirectory.equals("source"))
+    @Override
+    public Object getCurrentPathContents() {
+        if (this.currentPath.equals("source"))
             return source;  // Return immediately
 
-        String[] path = currentDirectory.split("\\\\");
+        String[] path = currentPath.split("\\\\");
         LinkedList<FileSystemEntity> contents = getDirectoryContents(path[1]);
 
         // Traverse, well if it's just "source/documents" or any same level, this for loop won't excute
@@ -116,8 +138,9 @@ public class FileManager {
         return contents;
     }
 
+
     private Folder getCurrentFolder() {
-        String[] path = currentDirectory.split("\\\\");
+        String[] path = currentPath.split("\\\\");
         LinkedList<FileSystemEntity> toReturn = getDirectoryContents(path[1]);
 
         // Traverse, well if it's just "source/documents" or any same level, this for loop won't excute
@@ -147,49 +170,101 @@ public class FileManager {
      * Creates a file in this current Directory
      * @param fileName the name of the file to Create
      * @param extension the extension of the file to Create
-     * @param size the size of the file to Create
      */
-    public void createFile(String fileName, String extension, int size) {
-        File newFile = new File(fileName, extension, size, new Date());
-        Folder currentFolderContainer = getCurrentFolder();
-        currentFolderContainer.addFile(newFile);
+    @Override
+    public void createFileWithName(String fileName, String extension) {
+        CustomFile newFile = new CustomFile(fileName, extension);
+        createFile(newFile);
     }
+
+    /**
+     * Creates a file in this current Directory
+     * @param newFile the file to be added in this directory
+     */
+    @Override
+    public void createFile(CustomFile newFile) {
+        newFile.setPath(getCurrentPath());
+        if (isInSpecialFolders(currentPath)) {
+            LinkedList<FileSystemEntity> specialFolder = getSpecialFolder();
+            specialFolder.insert(newFile);
+        }
+        else
+            getCurrentFolder().addFile(newFile);
+    }
+
+    private LinkedList<FileSystemEntity> getSpecialFolder() {
+        String[] currentPath = getCurrentPath().split("\\\\");
+        String specialFolderString = currentPath[1];
+
+        return switch (specialFolderString) {
+            case "Desktop" -> desktop;
+            case "Downloads" -> downloads;
+            case "Documents" -> documents;
+            case "Pictures" -> pictures;
+            case "Music" -> music;
+            default -> videos;
+        };
+    }
+
 
     /**
      * Creates a folder in this current directory.
      * @param folderName the name of the folder to create
      */
-    public void createFolder(String folderName) {
+    public void createFolderWithName(String folderName) {
         Folder newFolder = new Folder(folderName);
+        newFolder.setPath(getCurrentPath());
         Folder currentFolderContainer = getCurrentFolder();
+        currentFolderContainer.addFolder(newFolder);
+    }
+
+    /**
+     * Creates a folder in this current directory.
+     * @param newFolder the folder to be added
+     */
+    @Override
+    public void createFolder(Folder newFolder) {
+        Folder currentFolderContainer = getCurrentFolder();
+        newFolder.setPath(getCurrentPath());
         currentFolderContainer.addFolder(newFolder);
     }
 
 
     /**
-     * Deletes a file in the current directory.
+     * Deletes a file in the current path.
      *
      * @param fileName  the file name
      * @param extension the extension
-     * @throws ListEmptyException when the current folder container is empty.
+     * @throws ListEmptyException when the current path is empty.
+     * @throws NoSuchElementException when the file is not found in this current path.
      */
+    @Override
     public void deleteFile(String fileName, String extension) throws ListEmptyException {
-        File file = new File(fileName, extension);
+        if (currentPath.equals("source"))
+            throw new ListEmptyException("File deletion failed: No files found");
+
+        CustomFile file = new CustomFile(fileName, extension);
         Folder currentFolderContainer = getCurrentFolder();
         currentFolderContainer.removeFile(file);
     }
 
 
     /**
-     * Deletes a folder in the current directory.
-     * @param folderName the name of the folder to be deleted
-     * @throws ListEmptyException when the current folder container is empty.
+     * Deletes a folder in the current path
+     * @param folderName the name of the folder to be deleted in this current path
+     * @throws ListEmptyException when the current path is empty.
+     * @throws NoSuchElementException when the folder is not found in this current path.
+     * @throws SpecialFolderDeletionException when it attempts to delete a folder in same level as the special folders.
      */
+    @Override
     public void deleteFolder(String folderName) throws ListEmptyException {
+        if (currentPath.equals("source"))
+            throw new SpecialFolderDeletionException("Folder deletion failed: Cannot delete a Special Folder / Within the Special Folders");
         Folder folder = new Folder(folderName);
         Folder currentFolderContainer = getCurrentFolder();
         currentFolderContainer.removeFolder(folder);
     }
+
 
     /**
      * Renames a file in this current directory
@@ -198,17 +273,20 @@ public class FileManager {
      * @param newFileName the new name of the file
      * @param newExtension the new extension of the file
      */
+    @Override
     public void renameFile(String oldFileName, String oldExtension, String newFileName, String newExtension) {
-        File oldFileMock = new File(oldFileName, oldExtension);
+        CustomFile oldFileMock = new CustomFile(oldFileName, oldExtension);
         Folder currentFolderContainer = getCurrentFolder();
         currentFolderContainer.renameAFileInsideThisFolder(oldFileMock, newFileName, newExtension);
     }
+
 
     /**
      * Renames a folder in this current directory
      * @param oldFolderName the current name of the folder to be changed
      * @param newFolderName the new name of the folder
      */
+    @Override
     public void renameFolder(String oldFolderName, String newFolderName) {
         Folder oldFolderMock = new Folder(oldFolderName);
         Folder currentFolderContainer = getCurrentFolder();
@@ -216,29 +294,48 @@ public class FileManager {
     }
 
 
-    // TODO: make the File and Folder have a super class
+    /**
+     * Searches a file and returns a list of files that matches the fileName to Search
+     * @param filename the fileName to search
+     * @return an arraylist of files that matches the fileName to search
+     */
+    @Override
+    public MyGrowingArrayList<CustomFile> getMatchingFiles(String filename) {
+        Folder currentFolderContainer = getCurrentFolder();
+        return currentFolderContainer.getMatchingFiles(filename);
+    }
 
     /**
      * Searches a file and returns a list of files that matches the fileName to Search
      * @param filename the fileName to search
      * @return an arraylist of files that matches the fileName to search
      */
-    public MyGrowingArrayList<File> searchFile(String filename) {
-        MyGrowingArrayList<File> foundFiles = new MyGrowingArrayList<>();
-        searchFileRecursion(filename, foundFiles, (LinkedList<FileSystemEntity>) getCurrentDirectoryContents());
-        return foundFiles;
+    @Override
+    public CustomFile searchFile(String filename) {
+        if (isInSpecialFolders(currentPath)) {
+            LinkedList<FileSystemEntity> specialFolder = getSpecialFolder();
+            for (int i = 0; i < specialFolder.getSize(); i++) {
+                FileSystemEntity currentFileSystemEntity = specialFolder.getElement(i);
+                if (currentFileSystemEntity instanceof CustomFile file && file.getName().equalsIgnoreCase(filename))
+                    return (CustomFile) currentFileSystemEntity;
+            }
+        }
+        else
+            return getCurrentFolder().searchFile(filename);
+
+        throw new NoSuchElementException("File not found");
     }
 
-    // Depth-first search traversion
-    private void searchFileRecursion(String filenameToSearch, MyGrowingArrayList<File> filesFound, LinkedList<FileSystemEntity> currentContents) {
-        for (int i = 0; i < currentContents.getSize(); i++) {
-            Object currentFileFolder = currentContents.getElement(i);
-
-            if (currentFileFolder instanceof File file && file.getName().contains(filenameToSearch))
-                filesFound.insert(file);
-            else if (currentFileFolder instanceof Folder folder)
-                searchFileRecursion(filenameToSearch, filesFound, folder.getSubContents());
-        }
+    private boolean isInSpecialFolders(String currentPath) {
+        return switch (currentPath) {
+            case "source\\Desktop",
+                    "source\\Downloads",
+                    "source\\Documents",
+                    "source\\Pictures",
+                    "source\\Music",
+                    "source\\Videos" -> true;
+            default -> false;
+        };
     }
 
 

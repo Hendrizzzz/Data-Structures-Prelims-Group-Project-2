@@ -1,4 +1,4 @@
-package prelim;
+package prelim.Objects;
 
 import java.util.Date;
 
@@ -6,11 +6,11 @@ public abstract class FileSystemEntity {
     private String name;
     private String path;
     private int size; // or double?
-    private Date creationDate;
+    private final Date creationDate;
     private Date modificationDate;
 
     public FileSystemEntity() {
-
+        this.creationDate = new Date();
     }
 
     public FileSystemEntity(String name, Date creationDate) {

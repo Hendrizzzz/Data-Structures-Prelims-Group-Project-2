@@ -1,4 +1,4 @@
-package prelim;
+package prelim.Exceptions;
 
 /**
  * Exception thrown when an operation attempts to add elements to a data structure that has reached its capacity.

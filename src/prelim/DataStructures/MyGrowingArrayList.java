@@ -1,7 +1,6 @@
-package prelim;
+package prelim.DataStructures;
 
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 
 /**
  * A dynamically resizing array list implementation.

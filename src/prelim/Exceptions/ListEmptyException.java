@@ -1,4 +1,4 @@
-package prelim;
+package prelim.Exceptions;
 
 public class ListEmptyException extends Exception {
     public ListEmptyException(String message) {

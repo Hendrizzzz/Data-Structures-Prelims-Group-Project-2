@@ -1,4 +1,4 @@
-package prelim;
+package prelim.DataStructures;
 
 import java.util.Objects;
 
