@@ -3,9 +3,9 @@ package prelim.Objects;
 import prelim.DataStructures.LinkedList;
 import prelim.DataStructures.MyGrowingArrayList;
 import prelim.Exceptions.ListEmptyException;
+import prelim.Exceptions.NoSuchElementException;
 
 import java.util.Date;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 
@@ -79,7 +79,7 @@ public class Folder extends FileSystemEntity implements Comparable<Folder> {
 
         // Update the fileName if there exists a fileName already
         if (fileNameAppearance != 0)
-            newEntity.setName(getNameWithDuplicateIdentifier(newEntity, fileNameAppearance)); // repeatedName4Times (4).pdf
+            newEntity.setName(getNameWithDuplicateIdentifier(newEntity, fileNameAppearance + 1)); // repeatedName4Times (4).pdf
 
         subContents.insert(newEntity);
     }
@@ -126,21 +126,20 @@ public class Folder extends FileSystemEntity implements Comparable<Folder> {
         for (int i = 0; i < subContents.getSize(); i++)
             if (isSameEntity(subContents.getElement(i), fileSystemEntity)) {
                 subContents.deleteAtIndex(i);
+                setModificationDate(new Date());
                 return; // stop the traversing now
             }
 
-        throw new NoSuchElementException("File / Folder not found. Cannot delete. ");
+        throw new prelim.Exceptions.NoSuchElementException("File / Folder not found. Cannot delete. ");
     }
 
 
-    public void renameAFileInsideThisFolder(CustomFile oldFile, String name, String extension) {
+    public void renameAFileInsideThisFolder(CustomFile oldFile, String newName) {
         for (int i = 0; i < subContents.getSize(); i++) {
             FileSystemEntity currentEntity = subContents.getElement(i);
             if (isSameEntity(currentEntity, oldFile)) {
                 CustomFile fileToUpdate = (CustomFile) currentEntity;
-                fileToUpdate.setName(name);
-                fileToUpdate.setExtension(extension);
-                setModificationDate(new Date());
+                fileToUpdate.setName(newName);
                 return;
             }
         }
@@ -154,7 +153,6 @@ public class Folder extends FileSystemEntity implements Comparable<Folder> {
             if (isSameEntity(currentEntity, oldFolder)) {
                 Folder folderToUpdate = (Folder) currentEntity;
                 folderToUpdate.setName(newName);
-                setModificationDate(new Date());
                 return;
             }
         }
@@ -189,22 +187,22 @@ public class Folder extends FileSystemEntity implements Comparable<Folder> {
 
     /**
      *
-     * @param filename the fileName to search
+     * @param fileToSearch the file to search
      * @return the to be searched
      */
-    public CustomFile searchFile(String filename) {
-        return searchFileRecursion(filename, subContents);
+    public CustomFile searchFile(CustomFile fileToSearch) {
+        return searchFileRecursion(fileToSearch, subContents);
     }
 
     // Depth-first search
-    private CustomFile searchFileRecursion(String fileNameToSearch, LinkedList<FileSystemEntity> currentContents) {
+    private CustomFile searchFileRecursion(CustomFile fileToSearch, LinkedList<FileSystemEntity> currentContents) {
         for (int i = 0; i < currentContents.getSize(); i++) {
             FileSystemEntity currentFileFolder = currentContents.getElement(i);
 
-            if (currentFileFolder instanceof CustomFile file && file.getName().equalsIgnoreCase(fileNameToSearch))
+            if (currentFileFolder instanceof CustomFile file && file.equals(fileToSearch))
                 return file;
             else if (currentFileFolder instanceof Folder folder)
-                searchFileRecursion(fileNameToSearch, folder.getSubContents());
+                searchFileRecursion(fileToSearch, folder.getSubContents());
         }
 
         throw new NoSuchElementException("File not found");

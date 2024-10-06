@@ -10,6 +10,8 @@ import prelim.Objects.CustomFile;
 import prelim.Objects.FileSystemEntity;
 import prelim.Objects.Folder;
 import prelim.Exceptions.NoSuchElementException;
+import prelim.Exceptions.InvalidFileEntityNameException;
+import prelim.Exceptions.InvalidFileExtensionException;
 
 /**
  * Class that facilitates operation; creation, deletion, etc. of files or folders
@@ -70,6 +72,8 @@ public class FileManager implements FileManagerInterface{
      */
     @Override
     public void navigateToFolder(String folderName) {
+        if (getCurrentPathContents().search(new Folder(folderName)) == -1 )
+            throw new NoSuchElementException("Folder not found. ");
         currentPath = currentPath + "\\" + folderName;
     }
 
@@ -247,18 +251,21 @@ public class FileManager implements FileManagerInterface{
     /**
      * Renames a file in this current directory
      * @param oldFileName the current name of the file to be renamed
-     * @param oldExtension the current extension of the file to be renamed
+     * @param extension the extension of the file to be renamed
      * @param newFileName the new name of the file
-     * @param newExtension the new extension of the file
+     * @throws SpecialFolderDeletionException when tries to rename a file when in current path is "source"
+     * @throws InvalidFileEntityNameException when the passed oldFileName or the newFileName has backslash or period.
+     * @throws InvalidFileExtensionException when the passed extension is not valid.
+     * @throws NoSuchElementException when the file to rename is not found in this current path.
      */
     @Override
-    public void renameFile(String oldFileName, String oldExtension, String newFileName, String newExtension) {
+    public void renameFile(String oldFileName, String extension, String newFileName) {
         if (currentPath.equals("source"))
             throw new SpecialFolderDeletionException("Renaming file failed: Files cannot be created in same level with Special Folders");
 
-        CustomFile oldFileMock = new CustomFile(oldFileName, oldExtension);
+        CustomFile oldFileMock = new CustomFile(oldFileName, extension);
         Folder parentFolder = getCurrentFolder();
-        parentFolder.renameAFileInsideThisFolder(oldFileMock, newFileName, newExtension);
+        parentFolder.renameAFileInsideThisFolder(oldFileMock, newFileName);
     }
 
 
@@ -278,13 +285,14 @@ public class FileManager implements FileManagerInterface{
     }
 
 
+
     /**
      * Searches a file and returns a list of files that matches the fileName to Search
      * @param filename the fileName to search
      * @return an arraylist of files that matches the fileName to search
      */
     @Override
-    public MyGrowingArrayList<CustomFile> getMatchingFiles(String filename) {
+    public MyGrowingArrayList<CustomFile> searchFiles(String filename) {
         Folder parentFolder = getCurrentFolder();
         return parentFolder.getMatchingFiles(filename);
     }
@@ -293,10 +301,17 @@ public class FileManager implements FileManagerInterface{
      * Searches a file and returns a list of files that matches the fileName to Search
      * @param filename the fileName to search
      * @return an arraylist of files that matches the fileName to search
+     * @throws NoSuchElementException when it tries to acc
+     * @throws InvalidFileExtensionException when the fileExtension is not a valid fileExtension
+     * @throws InvalidFileEntityNameException when the fileName have a backslash or empty
      */
     @Override
-    public CustomFile searchFile(String filename) {
-        return getCurrentFolder().searchFile(filename);
+    public CustomFile getFile(String filename, String fileExtension) {
+        CustomFile fileToSearch = new CustomFile(filename, fileExtension);
+        if (currentPath.equals("source"))
+            source.searchFile(fileToSearch);
+
+        return getCurrentFolder().searchFile(fileToSearch);
     }
 
     private boolean isInSpecialFolders(String currentPath) {
@@ -312,4 +327,7 @@ public class FileManager implements FileManagerInterface{
     }
 
 
+    public void editFile(CustomFile fileToModify, String newContents) {
+        fileToModify.setContents(newContents);
+    }
 }

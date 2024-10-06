@@ -2,7 +2,7 @@ package prelim.DataStructures;
 
 import prelim.Exceptions.ListOverflowException;
 
-import java.util.NoSuchElementException;
+import prelim.Exceptions.NoSuchElementException;
 
 /**
  * Represents a singly linked list.

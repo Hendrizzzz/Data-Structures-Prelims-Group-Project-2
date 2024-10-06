@@ -14,7 +14,7 @@ public interface FileManagerInterface {
     void createFolder(Folder folder);
     void deleteFile(String fileName, String extension) throws ListEmptyException;
     void deleteFolder(String folderName) throws ListEmptyException;
-    void renameFile(String oldFileName, String oldExtension, String newFileName, String newExtension);
+    void renameFile(String oldFileName, String extension, String newFileName);
     void renameFolder(String oldFolderName, String newFolderName);
     void navigateToFolder(String folderName);
     void navigateBack();
@@ -23,6 +23,6 @@ public interface FileManagerInterface {
     Object getCurrentPathContents();
     String getFolderPath(String folderName); // for the gui
     String getFilePath(String fileName); // for the gui
-    MyGrowingArrayList<CustomFile> getMatchingFiles(String filename); // returns the searched files in the current directory and inner directories
-    CustomFile searchFile(String fileName);
+    MyGrowingArrayList<CustomFile> searchFiles(String filename); // returns the searched files in the current directory and inner directories
+    CustomFile getFile(String fileName, String fileExtension);
 }

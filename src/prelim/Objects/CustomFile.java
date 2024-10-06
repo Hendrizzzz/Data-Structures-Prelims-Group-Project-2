@@ -5,6 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Objects;
+import java.util.regex.Pattern;
+
+import prelim.Exceptions.InvalidFileEntityNameException;
+import prelim.Exceptions.InvalidFileExtensionException;
 
 public class CustomFile extends FileSystemEntity implements Comparable<CustomFile> {
     private String extension;
@@ -25,23 +29,28 @@ public class CustomFile extends FileSystemEntity implements Comparable<CustomFil
      * @param fileName Name of the file.
      * @param extension Extension of a file (i.e. exe, txt, csv, etc...).
      * @param contents the contents of the file
+     * @throws InvalidFileExtensionException when the extension passed is not valid
+     * @throws InvalidFileEntityNameException when the fileName passed contains a backslash
      * */
     public CustomFile(String fileName, String extension, String contents) {
         super (fileName, new Date());
-        this.extension = extension;
+        setExtension(extension);
         this.contents = contents;
         setSize(contents);
     }
+
 
     /**
      * Constructor for a file with specified name, extension, and size
      * @param fileName Name of the file.
      * @param extension Extension of a file (i.e. exe, txt, csv, etc...).
      * @param contents the contents of the file
+     * @throws InvalidFileExtensionException when the extension passed is not valid
+     * @throws InvalidFileEntityNameException when the fileName passed contains a backslash
      * */
     public CustomFile(String fileName, String extension, String contents, String desktopPath) {
         super (fileName, new Date());
-        this.extension = extension;
+        setExtension(extension);
         this.contents = contents;
         this.desktopPath = desktopPath;
         setSize(contents);
@@ -52,10 +61,11 @@ public class CustomFile extends FileSystemEntity implements Comparable<CustomFil
      * Constructor for a file with specified name and extension only.
      * @param fileName Name of the file.
      * @param extension Extension of a file (i.e. exe, txt, csv, etc...).
+     * @throws InvalidFileEntityNameException when the fileName passed contains a backslash
      * */
     public CustomFile(String fileName, String extension) {
         super(fileName, new Date());
-        this.extension = extension;
+        setExtension(extension);
         setSize(0);
     }
 
@@ -70,9 +80,22 @@ public class CustomFile extends FileSystemEntity implements Comparable<CustomFil
     /**
      * Sets the extension of a file.
      * @param extension The specified extension of a file.
+     * @throws InvalidFileExtensionException when the file extension is not valid
      * */
-    public void setExtension(String extension) {
+    private void setExtension(String extension) {
+        if (!isValidExtension(extension))
+            throw new InvalidFileExtensionException("Invalid file extension. A valid extension must start with a dot and contain 2 to 10 alphanumeric characters.");
         this.extension = extension;
+    }
+
+    private boolean isValidExtension(String extension) {
+        String regex = "^\\.[a-zA-Z0-9]{2,10}$";
+
+        // Compile the pattern
+        Pattern pattern = Pattern.compile(regex);
+
+        // Check if the extension matches the pattern
+        return pattern.matcher(extension).matches();
     }
 
 

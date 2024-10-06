@@ -3,6 +3,8 @@ package prelim.Objects;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import prelim.Exceptions.InvalidFileExtensionException;
+import prelim.Exceptions.InvalidFileEntityNameException;
 
 public class Reader {
     private static final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -43,24 +45,20 @@ public class Reader {
 
     }
 
+    /**
+     * @throws InvalidFileExtensionException when the extension is not valid
+     * @throws InvalidFileEntityNameException when the name of the file entity contains backslash/es
+     * @return the file read
+     */
     public static CustomFile readFile() {
         String fileName = prompt("Enter fileName: ");
-        String extension = readExtension();
+        String extension = prompt("Enter file extension: ");
         String contents = prompt("Enter contents: ");
 
         return new CustomFile(fileName, extension, contents);
     }
 
-    public static String readExtension(){
-        while (true) {
-            String extension = prompt("Enter extension: ");
-            switch (extension) {
-                case ".txt", ".csv", ".json", ".xml", ".md"
-                    ->  { return extension; }
-                default -> System.out.println("Accepted file extensions:  .txt | .csv | .json | .xml | .md | .pdf | .docx");
-            }
-        }
-    }
+
 
     public static Folder readFolder() {
         String folderName = prompt("Enter folder name: ");

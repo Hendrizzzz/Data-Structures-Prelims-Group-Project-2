@@ -1,5 +1,7 @@
 package prelim.Objects;
 
+import prelim.Exceptions.InvalidFileEntityNameException;
+
 import java.util.Date;
 
 public abstract class FileSystemEntity {
@@ -14,6 +16,8 @@ public abstract class FileSystemEntity {
     }
 
     public FileSystemEntity(String name, Date creationDate) {
+        if (name.contains("\\") || name.contains("."))
+            throw new InvalidFileEntityNameException("File or Folder name can't have \"\\\" or \".\" in their names. ");
         this.name = name;
         this.creationDate = creationDate;
     }
@@ -40,6 +44,8 @@ public abstract class FileSystemEntity {
     }
 
     public void setName(String name) {
+        if (name.contains("\\"))
+            throw new InvalidFileEntityNameException("File or Folder name can't have \"\\\" in their names. ");
         this.name = name;
     }
 

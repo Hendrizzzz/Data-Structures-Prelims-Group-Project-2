@@ -124,10 +124,10 @@ public class FileExplorerGUI extends JFrame {
     }
     private void searchByFileName(){
         searchTextField = new JTextField();
-        searchTextField.addActionListener((e) -> {
-            String key = searchTextField.getText();
-            FileManager fileManager = new FileManager();
-            fileManager.searchFile(key);
-        });
+//        searchTextField.addActionListener((e) -> {
+//            String key = searchTextField.getText();
+//            FileManager fileManager = new FileManager();
+//            fileManager.searchFile(key); //
+//        });
     }
 }
