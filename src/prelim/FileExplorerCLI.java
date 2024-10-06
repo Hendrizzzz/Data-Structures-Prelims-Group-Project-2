@@ -2,6 +2,7 @@ package prelim;
 
 import prelim.DataStructures.LinkedList;
 import prelim.Exceptions.ListEmptyException;
+import prelim.Exceptions.SpecialFolderCreationException;
 import prelim.Exceptions.SpecialFolderDeletionException;
 import prelim.Objects.CustomFile;
 import prelim.Objects.FileSystemEntity;
@@ -82,59 +83,31 @@ public class FileExplorerCLI {
 
 
     private String displayContentsOfCurrentDirectory() {
-        String currentPath = fileManager.getCurrentPath();
-        if (currentPath.equals("source"))
-            return getSpecialFolders();
-
         StringBuilder contents = new StringBuilder();
-        LinkedList<FileSystemEntity> currentPathContents = (LinkedList<FileSystemEntity>) fileManager.getCurrentPathContents();
+        LinkedList<FileSystemEntity> currentPathContents = fileManager.getCurrentPathContents();
 
         for (int i = 0; i < currentPathContents.getSize(); i++)
-            contents.append("- ").append(currentPathContents.getElement(i).toString());
+            contents.append("- ").append(currentPathContents.getElement(i).toString()).append("\n");
 
         if (contents.isEmpty())
             contents.append("none");
         return contents.toString();
     }
 
-    private String getSpecialFolders() {
-        return ("""
-                    - Desktop
-                    - Downloads
-                    - Documents
-                    - Pictures
-                    - Music
-                    - Videos
-                    """);
-    }
-
 
     private void addNewFolder() {
-        String currentPath = fileManager.getCurrentPath();
-        if (currentPath.equals("source"))
-            System.out.println("Cannot add a folder with the Special Folders. ");
-        else {
-            Folder newFolder = Reader.readFolder();
-            fileManager.createFolder(newFolder);
-            System.out.println("Successfully added " + newFolder);
-        }
+        Folder newFolder = Reader.readFolder();
+        fileManager.createFolder(newFolder);
+        System.out.println("Successfully added " + newFolder);
     }
 
     private void addNewFileToCurrentDirectory() {
-        String currentPath = fileManager.getCurrentPath();
-        if (currentPath.equals("source"))
-            System.out.println("Cannot add a file with the Special Folders. ");
-        else {
-            CustomFile newFile = Reader.readFile();
-            fileManager.createFile(newFile);
-            System.out.println("Successfully added " + newFile);
-        }
+        CustomFile newFile = Reader.readFile();
+        fileManager.createFile(newFile);
+        System.out.println("Successfully added " + newFile);
     }
 
     private void addFileFromExistingPath() {
-        if (fileManager.getCurrentPath().equals("source")) {
-            System.out.println("Cannot add a file in the source root. "); return; }
-
         String filePath = Reader.prompt("Enter the absolute file path: ");
         File file = new File(filePath);
 
@@ -142,21 +115,21 @@ public class FileExplorerCLI {
             String fileName = file.getName(); // This gets the full file name
             String extension = "";
 
-            // Extract extension if it exists
             int dotIndex = fileName.lastIndexOf('.');
-            if (isExtensionExists(dotIndex, fileName)) {
+            if (isExtensionExists(dotIndex, fileName)) {     // Extract extension if it exists
                 extension = fileName.substring(dotIndex + 1);
                 fileName = fileName.substring(0, dotIndex);
             }
 
-            // Read file contents
             String fileContents = "";
             try {
-                fileContents = CustomFile.readFileContents(filePath);
+                fileContents = CustomFile.readFileContents(filePath);   // Read file contents
             } catch (IOException ignored) {}
 
             CustomFile customFile = new CustomFile(fileName, extension, fileContents, filePath);
-            fileManager.createFile(customFile);
+            try { fileManager.createFile(customFile); }
+            catch (SpecialFolderCreationException e ) { System.out.println(e.getMessage()); return;  }
+
             System.out.println("Successfully added " + customFile + "  !");
         }
         else
@@ -243,10 +216,6 @@ public class FileExplorerCLI {
         System.out.println("Last Modified: " + fileToOpen.getModificationDate());
         System.out.println("=== File ===");
         System.out.println(fileToOpen.getContents());
-    }
-
-    private void goToPreviousDirectory() {
-        fileManager.navigateBack();
     }
 
 

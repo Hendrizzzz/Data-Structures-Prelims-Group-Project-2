@@ -4,29 +4,27 @@ package prelim;
 import prelim.DataStructures.LinkedList;
 import prelim.DataStructures.MyGrowingArrayList;
 import prelim.Exceptions.ListEmptyException;
+import prelim.Exceptions.SpecialFolderCreationException;
 import prelim.Exceptions.SpecialFolderDeletionException;
 import prelim.Objects.CustomFile;
 import prelim.Objects.FileSystemEntity;
 import prelim.Objects.Folder;
-
-import java.io.FileNotFoundException;
-import java.util.NoSuchElementException;
-
-import java.util.Date;
+import prelim.Exceptions.NoSuchElementException;
 
 /**
  * Class that facilitates operation; creation, deletion, etc. of files or folders
  */
 public class FileManager implements FileManagerInterface{
     private String currentPath;
-    private LinkedList<LinkedList<FileSystemEntity>> source;
+    private final Folder source;
 
-    LinkedList<FileSystemEntity> desktop;
-    LinkedList<FileSystemEntity> downloads;
-    LinkedList<FileSystemEntity> documents;
-    LinkedList<FileSystemEntity> pictures;
-    LinkedList<FileSystemEntity> music;
-    LinkedList<FileSystemEntity> videos;
+    // Special Folders
+    private final Folder desktop;
+    private final Folder downloads;
+    private final Folder documents;
+    private final Folder pictures;
+    private final Folder music;
+    private final Folder videos;
 
 
     {
@@ -38,7 +36,7 @@ public class FileManager implements FileManagerInterface{
      * Default Constructor; chains it with the parameterized constructor
      */
     public FileManager() {
-        this(new LinkedList<LinkedList<FileSystemEntity>>());
+        this(new Folder("source"));
     }
 
 
@@ -46,14 +44,14 @@ public class FileManager implements FileManagerInterface{
      * Constructs the predefined root and its predefined folders such as Desktop, downloads, etc.
      * @param source the source
      */
-    public FileManager(LinkedList<LinkedList<FileSystemEntity>> source) {
+    public FileManager(Folder source) {
         this.source = source;
-        this.source.insert(desktop = new LinkedList<>());
-        this.source.insert(downloads = new LinkedList<>());
-        this.source.insert(documents = new LinkedList<>());
-        this.source.insert(pictures = new LinkedList<>());
-        this.source.insert(music = new LinkedList<>());
-        this.source.insert(videos = new LinkedList<>());
+        this.source.getSubContents().insert(desktop = new Folder("Desktop"));
+        this.source.getSubContents().insert(downloads = new Folder("Downloads"));
+        this.source.getSubContents().insert(documents = new Folder("Documents"));
+        this.source.getSubContents().insert(pictures = new Folder("Pictures"));
+        this.source.getSubContents().insert(music = new Folder("Music"));
+        this.source.getSubContents().insert(videos = new Folder("Videos"));
     }
 
 
@@ -87,8 +85,9 @@ public class FileManager implements FileManagerInterface{
         String[] path = currentPath.split("\\\\");
 
         StringBuilder newPath = new StringBuilder();
-        for (int i = 0; i < path.length - 1; i++)  // don't include the last now
-            newPath.append(path[i]);
+        newPath.append("source");
+        for (int i = 1; i < path.length - 1; i++)  // don't include the last now
+            newPath.append("\\").append(path[i]);
 
         currentPath = newPath.toString();
     }
@@ -99,7 +98,7 @@ public class FileManager implements FileManagerInterface{
      * @return the path of the folder
      */
     @Override
-    public String getFolderPath(String folderName) {
+    public String getFolderPath(String folderName) { // For GUI
         return currentPath + "\\" + folderName;
     }
 
@@ -119,20 +118,20 @@ public class FileManager implements FileManagerInterface{
      * @return the contents of the current directory (folders, files).
      */
     @Override
-    public Object getCurrentPathContents() {
+    public LinkedList<FileSystemEntity> getCurrentPathContents() {
         if (this.currentPath.equals("source"))
-            return source;  // Return immediately
+            return source.getSubContents();  // Return immediately
 
         String[] path = currentPath.split("\\\\");
-        LinkedList<FileSystemEntity> contents = getDirectoryContents(path[1]);
+        LinkedList<FileSystemEntity> contents = source.getSubContents();
 
         // Traverse, well if it's just "source/documents" or any same level, this for loop won't excute
-        for (int i = 2; i < path.length; i++) {
+        for (int i = 1; i < path.length; i++) {
             int index = contents.search(new Folder(path[i]));
             if (index != -1)
                 contents = ((Folder) contents.getElement(index)).getSubContents();
             else
-                return null; // This should not execute, For CLI-debugging purposes
+                throw new NoSuchElementException("File not found"); // This should not execute, For CLI-debugging purposes
         }
 
         return contents;
@@ -141,28 +140,16 @@ public class FileManager implements FileManagerInterface{
 
     private Folder getCurrentFolder() {
         String[] path = currentPath.split("\\\\");
-        LinkedList<FileSystemEntity> toReturn = getDirectoryContents(path[1]);
+        LinkedList<FileSystemEntity> toReturn = source.getSubContents();
 
-        // Traverse, well if it's just "source/documents" or any same level, this for loop won't excute
-        for (int i = 2; i < path.length - 1; i++) {
+        // Traverse
+        for (int i = 1; i < path.length - 1; i++) {
             int index = toReturn.search(new Folder(path[i]));
             toReturn = ((Folder) toReturn.getElement(index)).getSubContents();
         }
 
         int index = toReturn.search(new Folder(path[path.length - 1]));
         return (Folder) toReturn.getElement(index);
-    }
-
-
-    private LinkedList<FileSystemEntity> getDirectoryContents(String dirType) {
-        return switch (dirType) {
-            case "Desktop" -> desktop;
-            case "Documents" -> documents;
-            case "Pictures" -> pictures;
-            case "Music" -> music;
-            case "Videos" -> videos;
-            default -> downloads;
-        };
     }
 
 
@@ -183,27 +170,11 @@ public class FileManager implements FileManagerInterface{
      */
     @Override
     public void createFile(CustomFile newFile) {
-        newFile.setPath(getCurrentPath());
-        if (isInSpecialFolders(currentPath)) {
-            LinkedList<FileSystemEntity> specialFolder = getSpecialFolder();
-            specialFolder.insert(newFile);
-        }
-        else
-            getCurrentFolder().addFile(newFile);
-    }
+        if (currentPath.equals("source"))
+            throw new SpecialFolderCreationException("Cannot create file at the same level as special folders. ");
 
-    private LinkedList<FileSystemEntity> getSpecialFolder() {
-        String[] currentPath = getCurrentPath().split("\\\\");
-        String specialFolderString = currentPath[1];
-
-        return switch (specialFolderString) {
-            case "Desktop" -> desktop;
-            case "Downloads" -> downloads;
-            case "Documents" -> documents;
-            case "Pictures" -> pictures;
-            case "Music" -> music;
-            default -> videos;
-        };
+        newFile.setPath(currentPath);
+        getCurrentFolder().addFile(newFile);
     }
 
 
@@ -212,10 +183,13 @@ public class FileManager implements FileManagerInterface{
      * @param folderName the name of the folder to create
      */
     public void createFolderWithName(String folderName) {
+        if (currentPath.equals("source"))
+            throw new SpecialFolderCreationException("Cannot create Folder at the same level as special folders. ");
+
         Folder newFolder = new Folder(folderName);
-        newFolder.setPath(getCurrentPath());
-        Folder currentFolderContainer = getCurrentFolder();
-        currentFolderContainer.addFolder(newFolder);
+        newFolder.setPath(currentPath);
+        Folder parentFolder = getCurrentFolder();
+        parentFolder.addFolder(newFolder);
     }
 
     /**
@@ -224,9 +198,12 @@ public class FileManager implements FileManagerInterface{
      */
     @Override
     public void createFolder(Folder newFolder) {
-        Folder currentFolderContainer = getCurrentFolder();
+        if (currentPath.equals("source"))
+            throw new SpecialFolderCreationException("Cannot create Folder at the same level as special folders. ");
+
+        Folder parentFolder = getCurrentFolder();
         newFolder.setPath(getCurrentPath());
-        currentFolderContainer.addFolder(newFolder);
+        parentFolder.addFolder(newFolder);
     }
 
 
@@ -241,11 +218,11 @@ public class FileManager implements FileManagerInterface{
     @Override
     public void deleteFile(String fileName, String extension) throws ListEmptyException {
         if (currentPath.equals("source"))
-            throw new ListEmptyException("File deletion failed: No files found");
+            throw new SpecialFolderDeletionException("File deletion failed: No files found");
 
         CustomFile file = new CustomFile(fileName, extension);
-        Folder currentFolderContainer = getCurrentFolder();
-        currentFolderContainer.removeFile(file);
+        Folder parentFolder = getCurrentFolder();
+        parentFolder.removeFile(file);
     }
 
 
@@ -260,9 +237,10 @@ public class FileManager implements FileManagerInterface{
     public void deleteFolder(String folderName) throws ListEmptyException {
         if (currentPath.equals("source"))
             throw new SpecialFolderDeletionException("Folder deletion failed: Cannot delete a Special Folder / Within the Special Folders");
+
         Folder folder = new Folder(folderName);
-        Folder currentFolderContainer = getCurrentFolder();
-        currentFolderContainer.removeFolder(folder);
+        Folder parentFolder = getCurrentFolder();
+        parentFolder.removeFolder(folder);
     }
 
 
@@ -275,9 +253,12 @@ public class FileManager implements FileManagerInterface{
      */
     @Override
     public void renameFile(String oldFileName, String oldExtension, String newFileName, String newExtension) {
+        if (currentPath.equals("source"))
+            throw new SpecialFolderDeletionException("Renaming file failed: Files cannot be created in same level with Special Folders");
+
         CustomFile oldFileMock = new CustomFile(oldFileName, oldExtension);
-        Folder currentFolderContainer = getCurrentFolder();
-        currentFolderContainer.renameAFileInsideThisFolder(oldFileMock, newFileName, newExtension);
+        Folder parentFolder = getCurrentFolder();
+        parentFolder.renameAFileInsideThisFolder(oldFileMock, newFileName, newExtension);
     }
 
 
@@ -288,9 +269,12 @@ public class FileManager implements FileManagerInterface{
      */
     @Override
     public void renameFolder(String oldFolderName, String newFolderName) {
+        if (currentPath.equals("source"))
+            throw new SpecialFolderDeletionException("Renaming folder failed: Special Folders cannot be renamed. ");
+
         Folder oldFolderMock = new Folder(oldFolderName);
-        Folder currentFolderContainer = getCurrentFolder();
-        currentFolderContainer.renameAFolderInsideThisFolder(oldFolderMock, newFolderName);
+        Folder parentFolder = getCurrentFolder();
+        parentFolder.renameAFolderInsideThisFolder(oldFolderMock, newFolderName);
     }
 
 
@@ -301,8 +285,8 @@ public class FileManager implements FileManagerInterface{
      */
     @Override
     public MyGrowingArrayList<CustomFile> getMatchingFiles(String filename) {
-        Folder currentFolderContainer = getCurrentFolder();
-        return currentFolderContainer.getMatchingFiles(filename);
+        Folder parentFolder = getCurrentFolder();
+        return parentFolder.getMatchingFiles(filename);
     }
 
     /**
@@ -312,18 +296,7 @@ public class FileManager implements FileManagerInterface{
      */
     @Override
     public CustomFile searchFile(String filename) {
-        if (isInSpecialFolders(currentPath)) {
-            LinkedList<FileSystemEntity> specialFolder = getSpecialFolder();
-            for (int i = 0; i < specialFolder.getSize(); i++) {
-                FileSystemEntity currentFileSystemEntity = specialFolder.getElement(i);
-                if (currentFileSystemEntity instanceof CustomFile file && file.getName().equalsIgnoreCase(filename))
-                    return (CustomFile) currentFileSystemEntity;
-            }
-        }
-        else
-            return getCurrentFolder().searchFile(filename);
-
-        throw new NoSuchElementException("File not found");
+        return getCurrentFolder().searchFile(filename);
     }
 
     private boolean isInSpecialFolders(String currentPath) {
