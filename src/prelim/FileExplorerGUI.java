@@ -46,7 +46,7 @@ public class FileExplorerGUI extends JFrame {
         frame.setVisible(true);
     }
     /**
-     * Creates a JPanel containing buttons for the user to choose between
+     * Creates a {@code JPanel} containing buttons for the user to choose between
      * deleting, copying, pasting, cutting, or renaming a file or a folder.
      *
      * @return The created JPanel.
@@ -69,7 +69,7 @@ public class FileExplorerGUI extends JFrame {
         return panel;
     }
     /**
-     * Creates a JPanel containing a search bar for a user to find a specific file or a folder
+     * Creates a {@code JPanel} containing a search bar for a user to find a specific file or a folder
      * he/ she wishes to look for.
      *
      * @return The created JPanel.
@@ -83,16 +83,15 @@ public class FileExplorerGUI extends JFrame {
         panel.add(searchTextField);
         panel.add(searchButton);
         // Action listener for search
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchByFileName();  // You can call the method to search by file or folder
-            }
+        searchButton.addActionListener((e) -> {
+            // You can call the method to search by file or folder
+            searchByFileName();
+            searchByFolderName();
         });
         return panel;
     }
     /**
-     * Creates a JPanel containing directory options for the user such as going back to the root folder of
+     * Creates a {@code JPanel} containing directory options for the user such as going back to the root folder of
      * the current directory or going all the way back to the home directory.
      *
      * @return The created JPanel.
@@ -130,25 +129,5 @@ public class FileExplorerGUI extends JFrame {
             FileManager fileManager = new FileManager();
             fileManager.searchFile(key);
         });
-    }
-    /**
-     * Method {@code ActionListener} implementation for searching a folder and utilizing the functional interface
-     * with a lambda expression.
-     */
-    private static class SearchByFolderNameActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            //TODO
-        }
-    }
-    /**
-     * Method {@code ActionListener} implementation for searching a file and utilizing the functional interface
-     * with a lambda expression.
-     */
-    private static class SearchByFileNameActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            //TODO
-        }
     }
 }
